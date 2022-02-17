@@ -15,7 +15,7 @@ public class S3 {
      *
      * @return 返回所有的桶
      */
-    public static List<Bucket> listBucket() {
+    public static List<Bucket> listBuckets() {
         return s3.listBuckets();
     }
 
