@@ -29,7 +29,7 @@ public class S3 {
     }
 
     /**
-     * 列出指定的桶
+     * 获取指定的桶
      *
      * @param bucketName 桶的名称
      * @return 返回指定名称的桶，没有的话返回 null
@@ -98,7 +98,7 @@ public class S3 {
         System.out.println("Deleting S3 bucket: " + bucketName);
         try {
             System.out.println(" - removing objects from bucket");
-            ObjectListing objectListing = s3.listObjects(bucketName);
+            ObjectListing objectListing = listObjects(bucketName);
             while (true) {
                 for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
                     s3.deleteObject(bucketName, summary.getKey());
@@ -167,6 +167,16 @@ public class S3 {
         }
         System.out.println("Done!");
         return true;
+    }
+
+    /**
+     * 获取指定桶中的所有对象信息
+     *
+     * @param bucketName 桶的名称
+     * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
+     */
+    public static ObjectListing listObjects(String bucketName) {
+        return s3.listObjects(bucketName);
     }
 
 }

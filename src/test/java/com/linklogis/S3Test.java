@@ -1,6 +1,8 @@
 package com.linklogis;
 
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.junit.Test;
 
 import java.util.List;
@@ -54,5 +56,14 @@ public class S3Test {
     @Test
     public void testPutObjectWithKey() {
         System.out.println(S3.putObject(bucketName, keyName, desktopFilePath));
+    }
+
+    @Test
+    public void testListObjects() {
+        ObjectListing objectListing = S3.listObjects(bucketName);
+        System.out.format("Objects in S3 bucket [%s] are:\n", bucketName);
+        for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
+            System.out.println("* " + summary.getKey());
+        }
     }
 }
