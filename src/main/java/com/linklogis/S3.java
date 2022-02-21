@@ -138,17 +138,27 @@ public class S3 {
     }
 
     /**
-     * 上传本地文件到指定的桶
-     * 以本地文件的名称作为 S3 中对象的名称
-     * 不管本地文件的路径差异，只要将相同名字的文件上传到同一个桶中，后上传的文件就会覆盖先上传的
+     * 上传本地文件到指定的桶，不指定对象的键，以本地文件的名称作为 S3 中对象的键
      *
      * @param bucketName 桶的名称
-     * @param filePath   上传的本地文件路径
+     * @param filePath   文件路径
      * @return true：上传成功 / false：上传异常
      */
     public static boolean putObject(String bucketName, String filePath) {
-        System.out.format("Uploading %s to S3 bucket %s...\n", filePath, bucketName);
         String keyName = Paths.get(filePath).getFileName().toString();
+        return putObject(bucketName, keyName, filePath);
+    }
+
+    /**
+     * 上传本地文件到指定的桶，并且指定对象的键
+     *
+     * @param bucketName 桶的名称
+     * @param keyName    对象的键
+     * @param filePath   文件路径
+     * @return true：上传成功 / false：上传异常
+     */
+    public static boolean putObject(String bucketName, String keyName, String filePath) {
+        System.out.format("Uploading [%s] to S3 bucket [%s], file path: [%s] ...\n", keyName, bucketName, filePath);
         try {
             s3.putObject(bucketName, keyName, new File(filePath));
         } catch (AmazonServiceException e) {
