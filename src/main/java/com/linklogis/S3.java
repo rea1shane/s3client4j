@@ -44,30 +44,53 @@ public class S3 {
     }
 
     /**
+     * 检查 bucket 是否存在
+     *
+     * @param bucketName 桶的名称
+     * @return true：存在 / false：不存在
+     */
+    public static boolean checkBucketExist(String bucketName) {
+        return s3.doesBucketExistV2(bucketName);
+    }
+
+    /**
      * 创建桶
      *
      * @param bucketName 桶的名称
-     * @return 返回创建的指定名称的桶，如果桶已存在则会返回该桶并提示已存在
+     * @return true：创建成功 / false：创建失败
      */
-    public static Bucket createBucket(String bucketName) {
-        Bucket b = null;
-        if (s3.doesBucketExistV2(bucketName)) {
-            System.out.format("Bucket %s already exists.\n", bucketName);
-            b = getBucket(bucketName);
-        } else {
-            try {
-                b = s3.createBucket(bucketName);
-            } catch (AmazonS3Exception e) {
-                System.err.println(e.getErrorMessage());
-            }
+    public static boolean createBucket(String bucketName) {
+        System.out.println("Creating S3 bucket: " + bucketName);
+        try {
+            s3.createBucket(bucketName);
+        } catch (AmazonS3Exception e) {
+            System.err.println(e.getErrorMessage());
+            return false;
         }
-        return b;
+        System.out.println("Done!");
+        return true;
+    }
+
+    /**
+     * 在创建桶前检查桶是否存在。如果存在的话，返回该桶；如果不存在的话，创建桶，并且返回该桶
+     *
+     * @param bucketName 桶的名称
+     * @return 返回创建的指定名称的桶，如果桶已存在则会返回该桶并提示已存在，返回 null 代表创建失败
+     */
+    public static Bucket checkExistAndCreateBucket(String bucketName) {
+        if (checkBucketExist(bucketName)) {
+            System.out.format("Bucket %s already exists.\n", bucketName);
+        } else {
+            createBucket(bucketName);
+        }
+        return getBucket(bucketName);
     }
 
     /**
      * 删除指定的桶
      *
      * @param bucketName 桶的名称
+     * @return true：删除成功 / false：删除失败
      */
     public static boolean deleteBucket(String bucketName) {
         System.out.println("Deleting S3 bucket: " + bucketName);
