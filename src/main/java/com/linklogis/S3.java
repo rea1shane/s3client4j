@@ -57,7 +57,7 @@ public class S3 {
      * 创建桶
      *
      * @param bucketName 桶的名称
-     * @return true：创建成功 / false：创建失败
+     * @return true：创建成功 / false：创建异常
      */
     public static boolean createBucket(String bucketName) {
         System.out.println("Creating S3 bucket: " + bucketName);
@@ -75,7 +75,7 @@ public class S3 {
      * 在创建桶前检查桶是否存在。如果存在的话，返回该桶；如果不存在的话，创建桶，并且返回该桶
      *
      * @param bucketName 桶的名称
-     * @return 返回创建的指定名称的桶，如果桶已存在则会返回该桶并提示已存在，返回 null 代表创建失败
+     * @return 返回创建的指定名称的桶，如果桶已存在则会返回该桶并提示已存在，返回 null 代表创建异常
      */
     public static Bucket checkExistAndCreateBucket(String bucketName) {
         if (checkBucketExist(bucketName)) {
@@ -90,7 +90,7 @@ public class S3 {
      * 删除指定的桶
      *
      * @param bucketName 桶的名称
-     * @return true：删除成功 / false：删除失败
+     * @return true：删除成功 / false：删除异常
      */
     public static boolean deleteBucket(String bucketName) {
         System.out.println("Deleting S3 bucket: " + bucketName);
