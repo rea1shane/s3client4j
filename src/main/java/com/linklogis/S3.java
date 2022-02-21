@@ -11,6 +11,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class S3 {
@@ -127,6 +129,28 @@ public class S3 {
 
             System.out.println(" OK, bucket ready to delete!");
             s3.deleteBucket(bucketName);
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+            return false;
+        }
+        System.out.println("Done!");
+        return true;
+    }
+
+    /**
+     * 上传本地文件到指定的桶
+     * 以本地文件的名称作为 S3 中对象的名称
+     * 不管本地文件的路径差异，只要将相同名字的文件上传到同一个桶中，后上传的文件就会覆盖先上传的
+     *
+     * @param bucketName 桶的名称
+     * @param filePath   上传的本地文件路径
+     * @return true：上传成功 / false：上传异常
+     */
+    public static boolean putObject(String bucketName, String filePath) {
+        System.out.format("Uploading %s to S3 bucket %s...\n", filePath, bucketName);
+        String keyName = Paths.get(filePath).getFileName().toString();
+        try {
+            s3.putObject(bucketName, keyName, new File(filePath));
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
             return false;

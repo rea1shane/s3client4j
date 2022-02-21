@@ -8,6 +8,8 @@ import java.util.List;
 public class S3Test {
 
     String bucketName = "create-by-java-sdk";
+    String desktopFilePath = "/Users/shane/Desktop/response2.json";
+    String downloadsFilePath = "/Users/shane/Downloads/response2.json";
 
     @Test
     public void testListBuckets() {
@@ -41,5 +43,10 @@ public class S3Test {
     @Test
     public void testDeleteBucket() {
         System.out.println(S3.deleteBucket(bucketName));
+    }
+
+    @Test
+    public void testPutObject() {
+        System.out.println(S3.putObject(bucketName, desktopFilePath));
     }
 }
