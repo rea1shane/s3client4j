@@ -28,13 +28,10 @@ public class ListObjectsRequest extends com.amazonaws.services.s3.model.ListObje
 
     @Override
     public String toString() {
-        return "* BucketName         : " + getBucketName() + "\n"
-                + "* Prefix             : " + getPrefix() + "\n"
-                + "* Marker             : " + getMarker() + "\n"
-                + "* Delimiter          : " + getDelimiter() + "\n"
-                + "* MaxKeys            : " + getMaxKeys() + "\n"
-                + "* EncodingType       : " + getEncodingType() + "\n"
-                + "* IsRequesterPays    : " + isRequesterPays() + "\n"
-                + "* ExpectedBucketOwner: " + getExpectedBucketOwner();
+        return "* BucketName: " + getBucketName() + "\n"
+                + "* Prefix    : " + getPrefix() + "\n"
+                + "* Marker    : " + getMarker() + "\n"
+                + "* Delimiter : " + getDelimiter() + "\n"
+                + "* MaxKeys   : " + getMaxKeys();
     }
 }
