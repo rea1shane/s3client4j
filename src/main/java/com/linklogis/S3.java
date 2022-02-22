@@ -47,6 +47,9 @@ public class S3 {
                 targetBucket = b;
             }
         }
+        if (targetBucket == null) {
+            System.err.printf("Bucket [%s] does not exist.", bucketName);
+        }
         return targetBucket;
     }
 
@@ -92,7 +95,7 @@ public class S3 {
      */
     public static Bucket checkExistAndCreateBucket(String bucketName) {
         if (checkBucketExist(bucketName)) {
-            System.out.format("Bucket %s already exists.\n", bucketName);
+            System.out.format("Bucket [%s] already exists.\n", bucketName);
         } else {
             createBucket(bucketName);
         }
