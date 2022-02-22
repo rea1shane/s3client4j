@@ -21,7 +21,9 @@ public class S3 {
     final static AmazonS3 s3 = AmazonS3ClientBuilder.standard().build();
 
     /**
+     * <p>
      * 列出所有的桶
+     * </p>
      *
      * @return 返回所有的桶
      */
@@ -30,7 +32,9 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 获取指定的桶
+     * </p>
      *
      * @param bucketName 桶的名称
      * @return 返回指定名称的桶，没有的话返回 null
@@ -47,7 +51,9 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 检查 bucket 是否存在
+     * </p>
      *
      * @param bucketName 桶的名称
      * @return true：存在 / false：不存在
@@ -57,7 +63,9 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 创建桶
+     * </p>
      *
      * @param bucketName 桶的名称
      * @return true：创建成功 / false：创建异常
@@ -75,7 +83,9 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 在创建桶前检查桶是否存在。如果存在的话，返回该桶；如果不存在的话，创建桶，并且返回该桶
+     * </p>
      *
      * @param bucketName 桶的名称
      * @return 返回创建的指定名称的桶，如果桶已存在则会返回该桶并提示已存在，返回 null 代表创建异常
@@ -90,7 +100,9 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 删除指定的桶
+     * </p>
      *
      * @param bucketName 桶的名称
      * @return true：删除成功 / false：删除异常
@@ -139,7 +151,9 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 上传本地文件到指定的桶，不指定对象的键，以本地文件的名称作为 S3 中对象的键
+     * </p>
      *
      * @param bucketName 桶的名称
      * @param filePath   文件路径
@@ -151,7 +165,9 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 上传本地文件到指定的桶，并且指定对象的键
+     * </p>
      *
      * @param bucketName 桶的名称
      * @param keyName    对象的键
@@ -171,8 +187,12 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 获取指定桶中的对象信息
+     * </p>
+     * <p>
      * 如果想要添加更多请求配置，请调用 {@link S3#listObjects(ListObjectsRequest)}
+     * </p>
      *
      * @param bucketName 桶的名称
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
@@ -182,8 +202,12 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 获取指定桶、指定前缀中的对象信息
+     * </p>
+     * <p>
      * 如果想要添加更多请求配置，请调用 {@link S3#listObjects(ListObjectsRequest)}
+     * </p>
      *
      * @param bucketName 桶的名称
      * @param prefix     路径前缀
@@ -194,7 +218,9 @@ public class S3 {
     }
 
     /**
+     * <p>
      * 获取桶中的对象信息，通过配置请求参数来筛选 objects
+     * </p>
      *
      * @param listObjectsRequest 请求对象，包含列出指定桶中的对象的所有选项
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
