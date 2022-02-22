@@ -76,4 +76,20 @@ public class S3Test {
             System.out.println("* " + summary.getKey());
         }
     }
+
+    @Test
+    public void testListObjectsWithRequest() {
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
+        listObjectsRequest.setBucketName(bucketName);
+        listObjectsRequest.setPrefix(prefixBucketName);
+
+        ObjectListing objectListing = S3.listObjects(listObjectsRequest);
+        System.out.println("ListObjectsRequest params are:");
+        System.out.println(listObjectsRequest);
+        System.out.println("Objects in S3 bucket are:");
+        for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
+            System.out.println("* " + summary.getKey());
+        }
+    }
+
 }

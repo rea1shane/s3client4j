@@ -190,4 +190,14 @@ public class S3 {
         return s3.listObjects(bucketName, prefixBucketName);
     }
 
+    /**
+     * 获取桶中的所有对象信息，通过配置请求参数来筛选 objects
+     *
+     * @param listObjectsRequest 请求对象，包含列出指定桶中的对象的所有选项
+     * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
+     */
+    public static ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
+        return s3.listObjects(listObjectsRequest);
+    }
+
 }
