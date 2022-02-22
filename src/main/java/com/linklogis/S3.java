@@ -171,7 +171,8 @@ public class S3 {
     }
 
     /**
-     * 获取指定桶中的所有对象信息
+     * 获取指定桶中的对象信息
+     * 如果想要添加更多请求配置，请调用 {@link S3#listObjects(ListObjectsRequest)}
      *
      * @param bucketName 桶的名称
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
@@ -181,7 +182,8 @@ public class S3 {
     }
 
     /**
-     * 获取指定桶、指定前缀中的所有对象信息
+     * 获取指定桶、指定前缀中的对象信息
+     * 如果想要添加更多请求配置，请调用 {@link S3#listObjects(ListObjectsRequest)}
      *
      * @param bucketName 桶的名称
      * @param prefix     路径前缀
@@ -192,7 +194,7 @@ public class S3 {
     }
 
     /**
-     * 获取桶中的所有对象信息，通过配置请求参数来筛选 objects
+     * 获取桶中的对象信息，通过配置请求参数来筛选 objects
      *
      * @param listObjectsRequest 请求对象，包含列出指定桶中的对象的所有选项
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息

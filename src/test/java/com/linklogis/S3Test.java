@@ -16,6 +16,9 @@ public class S3Test {
     String keyName = "response.json";
     String prefix = "test";
 
+    /**
+     * {@link S3#listBuckets()}
+     */
     @Test
     public void testListBuckets() {
         List<Bucket> buckets = S3.listBuckets();
@@ -25,41 +28,65 @@ public class S3Test {
         }
     }
 
+    /**
+     * {@link S3#checkBucketExist(String)}
+     */
     @Test
     public void testCheckBucketExist() {
         System.out.println(S3.checkBucketExist(bucketName));
     }
 
+    /**
+     * {@link S3#getBucket(String)}
+     */
     @Test
     public void testGetBucket() {
         System.out.println(S3.getBucket(bucketName));
     }
 
+    /**
+     * {@link S3#createBucket(String)}
+     */
     @Test
     public void testCreateBucket() {
         System.out.println(S3.createBucket(bucketName));
     }
 
+    /**
+     * {@link S3#checkExistAndCreateBucket(String)}
+     */
     @Test
     public void testCheckExistAndCreateBucket() {
         System.out.println(S3.checkExistAndCreateBucket(bucketName));
     }
 
+    /**
+     * {@link S3#deleteBucket(String)}
+     */
     @Test
     public void testDeleteBucket() {
         System.out.println(S3.deleteBucket(bucketName));
     }
 
+    /**
+     * {@link S3#putObject(String, String)}
+     */
     @Test
     public void testPutObject() {
         System.out.println(S3.putObject(bucketName, desktopFilePath));
     }
 
+    /**
+     * {@link S3#putObject(String, String, String)}
+     */
     @Test
     public void testPutObjectWithKey() {
         System.out.println(S3.putObject(bucketName, keyName, desktopFilePath));
     }
 
+    /**
+     * {@link S3#listObjects(String)}
+     */
     @Test
     public void testListObjects() {
         ObjectListing objectListing = S3.listObjects(bucketName);
@@ -69,6 +96,9 @@ public class S3Test {
         }
     }
 
+    /**
+     * {@link S3#listObjects(String, String)}
+     */
     @Test
     public void testListObjectsWithPrefix() {
         ObjectListing objectListing = S3.listObjects(bucketName, prefix);
@@ -78,6 +108,9 @@ public class S3Test {
         }
     }
 
+    /**
+     * {@link S3#listObjects(ListObjectsRequest)}
+     */
     @Test
     public void testListObjectsWithRequest() {
         ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
