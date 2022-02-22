@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.linklogis.override.ListObjectsRequest;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -176,18 +177,18 @@ public class S3 {
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
     public static ObjectListing listObjects(String bucketName) {
-        return s3.listObjects(bucketName);
+        return listObjects(new ListObjectsRequest(bucketName, null, null, null, null));
     }
 
     /**
      * 获取指定桶、指定前缀中的所有对象信息
      *
-     * @param bucketName       桶的名称
-     * @param prefixBucketName 路径前缀
+     * @param bucketName 桶的名称
+     * @param prefix     路径前缀
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
-    public static ObjectListing listObjects(String bucketName, String prefixBucketName) {
-        return s3.listObjects(bucketName, prefixBucketName);
+    public static ObjectListing listObjects(String bucketName, String prefix) {
+        return listObjects(new ListObjectsRequest(bucketName, prefix, null, null, null));
     }
 
     /**

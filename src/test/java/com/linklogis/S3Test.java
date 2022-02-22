@@ -3,6 +3,7 @@ package com.linklogis;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.linklogis.override.ListObjectsRequest;
 import org.junit.Test;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public class S3Test {
     String desktopFilePath = "/Users/shane/Desktop/response2.json";
     String downloadsFilePath = "/Users/shane/Downloads/response2.json";
     String keyName = "response.json";
-    String prefixBucketName = "test";
+    String prefix = "test";
 
     @Test
     public void testListBuckets() {
@@ -70,8 +71,8 @@ public class S3Test {
 
     @Test
     public void testListObjectsWithPrefix() {
-        ObjectListing objectListing = S3.listObjects(bucketName, prefixBucketName);
-        System.out.format("Objects in S3 bucket [%s] with prefix [%s] are:\n", bucketName, prefixBucketName);
+        ObjectListing objectListing = S3.listObjects(bucketName, prefix);
+        System.out.format("Objects in S3 bucket [%s] with prefix [%s] are:\n", bucketName, prefix);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
         }
@@ -81,7 +82,7 @@ public class S3Test {
     public void testListObjectsWithRequest() {
         ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
         listObjectsRequest.setBucketName(bucketName);
-        listObjectsRequest.setPrefix(prefixBucketName);
+        listObjectsRequest.setPrefix(prefix);
 
         ObjectListing objectListing = S3.listObjects(listObjectsRequest);
         System.out.println("ListObjectsRequest params are:");
