@@ -179,4 +179,15 @@ public class S3 {
         return s3.listObjects(bucketName);
     }
 
+    /**
+     * 获取指定桶、指定前缀中的所有对象信息
+     *
+     * @param bucketName       桶的名称
+     * @param prefixBucketName 路径前缀
+     * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
+     */
+    public static ObjectListing listObjects(String bucketName, String prefixBucketName) {
+        return s3.listObjects(bucketName, prefixBucketName);
+    }
+
 }

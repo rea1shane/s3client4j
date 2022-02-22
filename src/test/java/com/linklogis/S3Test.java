@@ -13,6 +13,7 @@ public class S3Test {
     String desktopFilePath = "/Users/shane/Desktop/response2.json";
     String downloadsFilePath = "/Users/shane/Downloads/response2.json";
     String keyName = "response.json";
+    String prefixBucketName = "test";
 
     @Test
     public void testListBuckets() {
@@ -62,6 +63,15 @@ public class S3Test {
     public void testListObjects() {
         ObjectListing objectListing = S3.listObjects(bucketName);
         System.out.format("Objects in S3 bucket [%s] are:\n", bucketName);
+        for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
+            System.out.println("* " + summary.getKey());
+        }
+    }
+
+    @Test
+    public void testListObjectsWithPrefix() {
+        ObjectListing objectListing = S3.listObjects(bucketName, prefixBucketName);
+        System.out.format("Objects in S3 bucket [%s] with prefix [%s] are:\n", bucketName, prefixBucketName);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
         }
