@@ -61,14 +61,6 @@ public class S3Test {
     }
 
     /**
-     * {@link S3#checkExistAndCreateBucket(String)}
-     */
-    @Test
-    public void testCheckExistAndCreateBucket() {
-        System.out.println(s3Object.checkExistAndCreateBucket(bucketName));
-    }
-
-    /**
      * {@link S3#deleteBucket(String)}
      */
     @Test

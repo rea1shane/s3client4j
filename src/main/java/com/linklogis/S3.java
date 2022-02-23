@@ -45,7 +45,7 @@ public class S3 {
      * 列出所有的桶
      * </p>
      *
-     * @return 返回所有的桶
+     * @return 桶列表
      */
     public List<Bucket> listBuckets() {
         return this.s3.listBuckets();
@@ -57,7 +57,7 @@ public class S3 {
      * </p>
      *
      * @param bucketName 桶的名称
-     * @return 返回指定名称的桶，没有的话返回 null
+     * @return 指定名称的桶，没有的话返回 null
      */
     public Bucket getBucket(String bucketName) {
         Bucket targetBucket = null;
@@ -102,23 +102,6 @@ public class S3 {
             System.err.println("Failure!");
         }
         return msg;
-    }
-
-    /**
-     * <p>
-     * 在创建桶前检查桶是否存在。如果存在的话，返回该桶；如果不存在的话，创建桶，并且返回该桶
-     * </p>
-     *
-     * @param bucketName 桶的名称
-     * @return 返回创建的指定名称的桶，如果桶已存在则会返回该桶并提示已存在，返回 null 代表创建异常
-     */
-    public Bucket checkExistAndCreateBucket(String bucketName) {
-        if (checkBucketExist(bucketName)) {
-            System.out.format("Bucket [%s] already exists.\n", bucketName);
-        } else {
-            createBucket(bucketName);
-        }
-        return getBucket(bucketName);
     }
 
     /**
