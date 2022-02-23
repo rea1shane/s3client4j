@@ -155,42 +155,6 @@ public class S3 {
 
     /**
      * <p>
-     * 上传本地文件到指定的桶，不指定对象的键，以本地文件的名称作为 S3 中对象的键
-     * </p>
-     *
-     * @param bucketName 桶的名称
-     * @param filePath   文件路径
-     * @return true：上传成功 / false：上传异常
-     */
-    public static boolean putObject(String bucketName, String filePath) {
-        String keyName = Paths.get(filePath).getFileName().toString();
-        return putObject(bucketName, keyName, filePath);
-    }
-
-    /**
-     * <p>
-     * 上传本地文件到指定的桶，并且指定对象的键
-     * </p>
-     *
-     * @param bucketName 桶的名称
-     * @param keyName    对象的键
-     * @param filePath   文件路径
-     * @return true：上传成功 / false：上传异常
-     */
-    public static boolean putObject(String bucketName, String keyName, String filePath) {
-        System.out.format("Uploading [%s] to S3 bucket [%s], file path: [%s] ...\n", keyName, bucketName, filePath);
-        try {
-            s3.putObject(bucketName, keyName, new File(filePath));
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-            return false;
-        }
-        System.out.println("Done!");
-        return true;
-    }
-
-    /**
-     * <p>
      * 获取指定桶中的对象信息
      * </p>
      * <p>
@@ -230,6 +194,42 @@ public class S3 {
      */
     public static ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
         return s3.listObjects(listObjectsRequest);
+    }
+
+    /**
+     * <p>
+     * 上传本地文件到指定的桶，不指定对象的键，以本地文件的名称作为 S3 中对象的键
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param filePath   文件路径
+     * @return true：上传成功 / false：上传异常
+     */
+    public static boolean putObject(String bucketName, String filePath) {
+        String keyName = Paths.get(filePath).getFileName().toString();
+        return putObject(bucketName, keyName, filePath);
+    }
+
+    /**
+     * <p>
+     * 上传本地文件到指定的桶，并且指定对象的键
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param keyName    对象的键
+     * @param filePath   文件路径
+     * @return true：上传成功 / false：上传异常
+     */
+    public static boolean putObject(String bucketName, String keyName, String filePath) {
+        System.out.format("Uploading [%s] to S3 bucket [%s], file path: [%s] ...\n", keyName, bucketName, filePath);
+        try {
+            s3.putObject(bucketName, keyName, new File(filePath));
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+            return false;
+        }
+        System.out.println("Done!");
+        return true;
     }
 
 }
