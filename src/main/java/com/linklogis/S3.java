@@ -1,20 +1,18 @@
 package com.linklogis;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.linklogis.override.ListObjectsRequest;
 import com.linklogis.override.PutObjectRequest;
 
-import java.io.File;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.List;
 
 public class S3 {
@@ -98,8 +96,8 @@ public class S3 {
             this.s3.createBucket(bucketName);
             result = true;
             System.out.println("Done!");
-        } catch (AmazonS3Exception e) {
-            System.err.println(e.getErrorMessage());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
             System.err.println("Failure!");
         }
         return result;
@@ -170,8 +168,8 @@ public class S3 {
             this.s3.deleteBucket(bucketName);
             result = true;
             System.out.println("Done!");
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
             System.err.println("Failure!");
         }
         return result;
@@ -222,39 +220,17 @@ public class S3 {
 
     /**
      * <p>
-     * 上传本地文件到指定的桶，不指定对象的键，以本地文件的名称作为 S3 中对象的键
-     * </p>
-     *
-     * @param bucketName 桶的名称
-     * @param filePath   文件路径
-     * @return true：上传成功 / false：上传异常
-     */
-    public boolean putObject(String bucketName, String filePath) {
-        String keyName = Paths.get(filePath).getFileName().toString();
-        return putObject(bucketName, keyName, filePath);
-    }
-
-    /**
-     * <p>
      * 上传本地文件到指定的桶，并且指定对象的键
      * </p>
      *
      * @param bucketName 桶的名称
-     * @param keyName    对象的键
-     * @param filePath   文件路径
+     * @param key        对象的键
+     * @param input      文件流
+     * @param metadata   元数据
      * @return true：上传成功 / false：上传异常
      */
-    public boolean putObject(String bucketName, String keyName, String filePath) {
-        System.out.format("Uploading [%s] to S3 bucket [%s], file path: [%s]...\n", keyName, bucketName, filePath);
-        try {
-            this.s3.putObject(bucketName, keyName, new File(filePath));
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-            System.err.println("Failure!");
-            return false;
-        }
-        System.out.println("Done!");
-        return true;
+    public boolean putObject(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
+        return putObject(new PutObjectRequest(bucketName, key, input, metadata));
     }
 
     /**
@@ -272,11 +248,9 @@ public class S3 {
             this.s3.putObject(putObjectRequest);
             result = true;
             System.out.println("Done!");
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-            System.err.println("Failure!");
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            e.printStackTrace();
             System.err.println("Failure!");
         }
         return result;

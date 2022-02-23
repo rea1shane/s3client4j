@@ -2,11 +2,17 @@ package com.linklogis;
 
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.linklogis.override.ListObjectsRequest;
 import org.junit.Test;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class S3Test {
 
@@ -15,8 +21,9 @@ public class S3Test {
     String bucketName = "create-by-java-sdk";
     String desktopFilePath = "/Users/shane/Desktop/response2.json";
     String downloadsFilePath = "/Users/shane/Downloads/response2.json";
-    String keyName = "response.json";
+    String key = "response.json";
     String prefix = "test";
+    Map<String, String> metadata = new HashMap<>();
 
     /**
      * {@link S3#listBuckets()}
@@ -71,22 +78,6 @@ public class S3Test {
     }
 
     /**
-     * {@link S3#putObject(String, String)}
-     */
-    @Test
-    public void testPutObject() {
-        System.out.println(s3Object.putObject(bucketName, desktopFilePath));
-    }
-
-    /**
-     * {@link S3#putObject(String, String, String)}
-     */
-    @Test
-    public void testPutObjectWithKey() {
-        System.out.println(s3Object.putObject(bucketName, keyName, desktopFilePath));
-    }
-
-    /**
      * {@link S3#listObjects(String)}
      */
     @Test
@@ -126,6 +117,19 @@ public class S3Test {
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
         }
+    }
+
+    /**
+     * {@link S3#putObject(String, String, InputStream, ObjectMetadata)}
+     */
+    @Test
+    public void testPutObjectWithStream() throws IOException {
+        InputStream input = new FileInputStream(desktopFilePath);
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        metadata.put("用途", "测试");
+        objectMetadata.setUserMetadata(metadata);
+        System.out.println(s3Object.putObject(bucketName, key, input, objectMetadata));
+        input.close();
     }
 
 }
