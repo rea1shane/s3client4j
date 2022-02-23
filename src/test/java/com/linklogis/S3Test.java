@@ -10,6 +10,8 @@ import java.util.List;
 
 public class S3Test {
 
+    final static S3 s3Object = new S3();
+
     String bucketName = "create-by-java-sdk";
     String desktopFilePath = "/Users/shane/Desktop/response2.json";
     String downloadsFilePath = "/Users/shane/Downloads/response2.json";
@@ -21,7 +23,7 @@ public class S3Test {
      */
     @Test
     public void testListBuckets() {
-        List<Bucket> buckets = S3.listBuckets();
+        List<Bucket> buckets = s3Object.listBuckets();
         System.out.println("Your Amazon S3 buckets are:");
         for (Bucket b : buckets) {
             System.out.println("* " + b.getName());
@@ -33,7 +35,7 @@ public class S3Test {
      */
     @Test
     public void testCheckBucketExist() {
-        System.out.println(S3.checkBucketExist(bucketName));
+        System.out.println(s3Object.checkBucketExist(bucketName));
     }
 
     /**
@@ -41,7 +43,7 @@ public class S3Test {
      */
     @Test
     public void testGetBucket() {
-        System.out.println(S3.getBucket(bucketName));
+        System.out.println(s3Object.getBucket(bucketName));
     }
 
     /**
@@ -49,7 +51,7 @@ public class S3Test {
      */
     @Test
     public void testCreateBucket() {
-        System.out.println(S3.createBucket(bucketName));
+        System.out.println(s3Object.createBucket(bucketName));
     }
 
     /**
@@ -57,7 +59,7 @@ public class S3Test {
      */
     @Test
     public void testCheckExistAndCreateBucket() {
-        System.out.println(S3.checkExistAndCreateBucket(bucketName));
+        System.out.println(s3Object.checkExistAndCreateBucket(bucketName));
     }
 
     /**
@@ -65,7 +67,7 @@ public class S3Test {
      */
     @Test
     public void testDeleteBucket() {
-        System.out.println(S3.deleteBucket(bucketName));
+        System.out.println(s3Object.deleteBucket(bucketName));
     }
 
     /**
@@ -73,7 +75,7 @@ public class S3Test {
      */
     @Test
     public void testPutObject() {
-        System.out.println(S3.putObject(bucketName, desktopFilePath));
+        System.out.println(s3Object.putObject(bucketName, desktopFilePath));
     }
 
     /**
@@ -81,7 +83,7 @@ public class S3Test {
      */
     @Test
     public void testPutObjectWithKey() {
-        System.out.println(S3.putObject(bucketName, keyName, desktopFilePath));
+        System.out.println(s3Object.putObject(bucketName, keyName, desktopFilePath));
     }
 
     /**
@@ -89,7 +91,7 @@ public class S3Test {
      */
     @Test
     public void testListObjects() {
-        ObjectListing objectListing = S3.listObjects(bucketName);
+        ObjectListing objectListing = s3Object.listObjects(bucketName);
         System.out.format("Objects in S3 bucket [%s] are:\n", bucketName);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
@@ -101,7 +103,7 @@ public class S3Test {
      */
     @Test
     public void testListObjectsWithPrefix() {
-        ObjectListing objectListing = S3.listObjects(bucketName, prefix);
+        ObjectListing objectListing = s3Object.listObjects(bucketName, prefix);
         System.out.format("Objects in S3 bucket [%s] with prefix [%s] are:\n", bucketName, prefix);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
@@ -117,7 +119,7 @@ public class S3Test {
         listObjectsRequest.setBucketName(bucketName);
         listObjectsRequest.setPrefix(prefix);
 
-        ObjectListing objectListing = S3.listObjects(listObjectsRequest);
+        ObjectListing objectListing = s3Object.listObjects(listObjectsRequest);
         System.out.println("ListObjectsRequest params are:");
         System.out.println(listObjectsRequest);
         System.out.println("Objects in S3 bucket are:");

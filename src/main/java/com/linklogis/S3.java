@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.linklogis.override.ListObjectsRequest;
+import com.linklogis.override.PutObjectRequest;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -18,7 +19,27 @@ import java.util.List;
 
 public class S3 {
 
-    final static AmazonS3 s3 = AmazonS3ClientBuilder.standard().build();
+    private final AmazonS3 s3;
+
+    /**
+     * <p>
+     * 使用默认配置的 S3 client
+     * </p>
+     */
+    public S3() {
+        this.s3 = AmazonS3ClientBuilder.standard().build();
+    }
+
+    /**
+     * <p>
+     * 使用自定义的 s3 client
+     * </p>
+     *
+     * @param s3 自定义 s3 client
+     */
+    public S3(AmazonS3 s3) {
+        this.s3 = s3;
+    }
 
     /**
      * <p>
@@ -27,7 +48,7 @@ public class S3 {
      *
      * @return 返回所有的桶
      */
-    public static List<Bucket> listBuckets() {
+    public List<Bucket> listBuckets() {
         return s3.listBuckets();
     }
 
@@ -39,16 +60,13 @@ public class S3 {
      * @param bucketName 桶的名称
      * @return 返回指定名称的桶，没有的话返回 null
      */
-    public static Bucket getBucket(String bucketName) {
+    public Bucket getBucket(String bucketName) {
         Bucket targetBucket = null;
         List<Bucket> buckets = listBuckets();
         for (Bucket b : buckets) {
             if (b.getName().equals(bucketName)) {
                 targetBucket = b;
             }
-        }
-        if (targetBucket == null) {
-            System.err.printf("Bucket [%s] does not exist.", bucketName);
         }
         return targetBucket;
     }
@@ -61,7 +79,7 @@ public class S3 {
      * @param bucketName 桶的名称
      * @return true：存在 / false：不存在
      */
-    public static boolean checkBucketExist(String bucketName) {
+    public boolean checkBucketExist(String bucketName) {
         return s3.doesBucketExistV2(bucketName);
     }
 
@@ -73,16 +91,18 @@ public class S3 {
      * @param bucketName 桶的名称
      * @return true：创建成功 / false：创建异常
      */
-    public static boolean createBucket(String bucketName) {
-        System.out.println("Creating S3 bucket: " + bucketName);
+    public boolean createBucket(String bucketName) {
+        boolean result = false;
         try {
+            System.out.printf("Creating S3 bucket [%s]...\n", bucketName);
             s3.createBucket(bucketName);
+            result = true;
+            System.out.println("Done!");
         } catch (AmazonS3Exception e) {
             System.err.println(e.getErrorMessage());
-            return false;
+            System.err.println("Failure!");
         }
-        System.out.println("Done!");
-        return true;
+        return result;
     }
 
     /**
@@ -93,7 +113,7 @@ public class S3 {
      * @param bucketName 桶的名称
      * @return 返回创建的指定名称的桶，如果桶已存在则会返回该桶并提示已存在，返回 null 代表创建异常
      */
-    public static Bucket checkExistAndCreateBucket(String bucketName) {
+    public Bucket checkExistAndCreateBucket(String bucketName) {
         if (checkBucketExist(bucketName)) {
             System.out.format("Bucket [%s] already exists.\n", bucketName);
         } else {
@@ -110,10 +130,11 @@ public class S3 {
      * @param bucketName 桶的名称
      * @return true：删除成功 / false：删除异常
      */
-    public static boolean deleteBucket(String bucketName) {
-        System.out.println("Deleting S3 bucket: " + bucketName);
+    public boolean deleteBucket(String bucketName) {
+        boolean result = false;
         try {
-            System.out.println(" - removing objects from bucket");
+            System.out.printf("Deleting S3 bucket [%s]:\n", bucketName);
+            System.out.println(" - removing objects from bucket...");
             ObjectListing objectListing = listObjects(bucketName);
             while (true) {
                 for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
@@ -127,8 +148,9 @@ public class S3 {
                     break;
                 }
             }
+            System.out.println(" - done!");
 
-            System.out.println(" - removing versions from bucket");
+            System.out.println(" - removing versions from bucket...");
             VersionListing versionListing = s3.listVersions(new ListVersionsRequest().withBucketName(bucketName));
             while (true) {
                 for (S3VersionSummary vs : versionListing.getVersionSummaries()) {
@@ -142,15 +164,17 @@ public class S3 {
                     break;
                 }
             }
+            System.out.println(" - done!");
 
-            System.out.println(" OK, bucket ready to delete!");
+            System.out.println(" - deleting bucket...");
             s3.deleteBucket(bucketName);
+            result = true;
+            System.out.println("Done!");
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
-            return false;
+            System.err.println("Failure!");
         }
-        System.out.println("Done!");
-        return true;
+        return result;
     }
 
     /**
@@ -164,7 +188,7 @@ public class S3 {
      * @param bucketName 桶的名称
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
-    public static ObjectListing listObjects(String bucketName) {
+    public ObjectListing listObjects(String bucketName) {
         return listObjects(new ListObjectsRequest(bucketName, null, null, null, null));
     }
 
@@ -180,7 +204,7 @@ public class S3 {
      * @param prefix     路径前缀
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
-    public static ObjectListing listObjects(String bucketName, String prefix) {
+    public ObjectListing listObjects(String bucketName, String prefix) {
         return listObjects(new ListObjectsRequest(bucketName, prefix, null, null, null));
     }
 
@@ -192,7 +216,7 @@ public class S3 {
      * @param listObjectsRequest 请求对象，包含列出指定桶中的对象的所有选项
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
-    public static ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
+    public ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
         return s3.listObjects(listObjectsRequest);
     }
 
@@ -205,7 +229,7 @@ public class S3 {
      * @param filePath   文件路径
      * @return true：上传成功 / false：上传异常
      */
-    public static boolean putObject(String bucketName, String filePath) {
+    public boolean putObject(String bucketName, String filePath) {
         String keyName = Paths.get(filePath).getFileName().toString();
         return putObject(bucketName, keyName, filePath);
     }
@@ -220,16 +244,42 @@ public class S3 {
      * @param filePath   文件路径
      * @return true：上传成功 / false：上传异常
      */
-    public static boolean putObject(String bucketName, String keyName, String filePath) {
-        System.out.format("Uploading [%s] to S3 bucket [%s], file path: [%s] ...\n", keyName, bucketName, filePath);
+    public boolean putObject(String bucketName, String keyName, String filePath) {
+        System.out.format("Uploading [%s] to S3 bucket [%s], file path: [%s]...\n", keyName, bucketName, filePath);
         try {
             s3.putObject(bucketName, keyName, new File(filePath));
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
+            System.err.println("Failure!");
             return false;
         }
         System.out.println("Done!");
         return true;
+    }
+
+    /**
+     * <p>
+     * 上传文件
+     * </p>
+     *
+     * @param putObjectRequest 请求对象，包含上传对象的所有选项
+     * @return true：上传成功 / false：上传异常
+     */
+    public boolean putObject(PutObjectRequest putObjectRequest) {
+        boolean result = false;
+        try {
+            System.out.format("Uploading [%s] to S3 bucket [%s]...\n", putObjectRequest.getKey(), putObjectRequest.getBucketName());
+            s3.putObject(putObjectRequest);
+            result = true;
+            System.out.println("Done!");
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+            System.err.println("Failure!");
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.err.println("Failure!");
+        }
+        return result;
     }
 
 }
