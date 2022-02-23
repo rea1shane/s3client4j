@@ -1,8 +1,8 @@
 package com.linklogis;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -88,27 +88,20 @@ public class S3 {
      * </p>
      *
      * @param bucketName 桶的名称
-     * @return true：创建成功 / false：创建异常
+     * @return 执行结果
      */
-    public boolean createBucket(String bucketName) {
-        boolean result = false;
+    public String createBucket(String bucketName) {
+        String msg = "OK";
         try {
             System.out.printf("Creating S3 bucket [%s]...\n", bucketName);
             this.s3.createBucket(bucketName);
-            result = true;
             System.out.println("Done!");
-        } catch (AmazonS3Exception e) {
-            if (e.getErrorCode().equals("BucketAlreadyOwnedByYou")) {
-                System.err.println(e.getErrorMessage());
-            } else {
-                e.printStackTrace();
-            }
-            System.err.println("Failure!");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
+            System.err.println(msg);
             System.err.println("Failure!");
         }
-        return result;
+        return msg;
     }
 
     /**
@@ -134,10 +127,10 @@ public class S3 {
      * </p>
      *
      * @param bucketName 桶的名称
-     * @return true：删除成功 / false：删除异常
+     * @return 执行结果
      */
-    public boolean deleteBucket(String bucketName) {
-        boolean result = false;
+    public String deleteBucket(String bucketName) {
+        String msg = "OK";
         try {
             System.out.printf("Deleting S3 bucket [%s]:\n", bucketName);
             System.out.println(" - removing objects from bucket...");
@@ -174,13 +167,13 @@ public class S3 {
 
             System.out.println(" - deleting bucket...");
             this.s3.deleteBucket(bucketName);
-            result = true;
             System.out.println("Done!");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
+            System.err.println(msg);
             System.err.println("Failure!");
         }
-        return result;
+        return msg;
     }
 
     /**
@@ -235,9 +228,9 @@ public class S3 {
      * @param key        对象的键
      * @param input      文件流
      * @param metadata   元数据
-     * @return true：上传成功 / false：上传异常
+     * @return 执行结果
      */
-    public boolean putObject(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
+    public String putObject(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
         return putObject(new PutObjectRequest(bucketName, key, input, metadata));
     }
 
@@ -247,20 +240,20 @@ public class S3 {
      * </p>
      *
      * @param putObjectRequest 请求对象，包含上传对象的所有选项
-     * @return true：上传成功 / false：上传异常
+     * @return 执行结果
      */
-    public boolean putObject(PutObjectRequest putObjectRequest) {
-        boolean result = false;
+    public String putObject(PutObjectRequest putObjectRequest) {
+        String msg = "OK";
         try {
             System.out.format("Uploading [%s] to S3 bucket [%s]...\n", putObjectRequest.getKey(), putObjectRequest.getBucketName());
             this.s3.putObject(putObjectRequest);
-            result = true;
             System.out.println("Done!");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
+            System.err.println(msg);
             System.err.println("Failure!");
         }
-        return result;
+        return msg;
     }
 
 }
