@@ -49,7 +49,7 @@ public class S3 {
      * @return 返回所有的桶
      */
     public List<Bucket> listBuckets() {
-        return s3.listBuckets();
+        return this.s3.listBuckets();
     }
 
     /**
@@ -80,7 +80,7 @@ public class S3 {
      * @return true：存在 / false：不存在
      */
     public boolean checkBucketExist(String bucketName) {
-        return s3.doesBucketExistV2(bucketName);
+        return this.s3.doesBucketExistV2(bucketName);
     }
 
     /**
@@ -95,7 +95,7 @@ public class S3 {
         boolean result = false;
         try {
             System.out.printf("Creating S3 bucket [%s]...\n", bucketName);
-            s3.createBucket(bucketName);
+            this.s3.createBucket(bucketName);
             result = true;
             System.out.println("Done!");
         } catch (AmazonS3Exception e) {
@@ -138,12 +138,12 @@ public class S3 {
             ObjectListing objectListing = listObjects(bucketName);
             while (true) {
                 for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
-                    s3.deleteObject(bucketName, summary.getKey());
+                    this.s3.deleteObject(bucketName, summary.getKey());
                 }
 
                 // more objectListing to retrieve?
                 if (objectListing.isTruncated()) {
-                    objectListing = s3.listNextBatchOfObjects(objectListing);
+                    objectListing = this.s3.listNextBatchOfObjects(objectListing);
                 } else {
                     break;
                 }
@@ -151,15 +151,15 @@ public class S3 {
             System.out.println(" - done!");
 
             System.out.println(" - removing versions from bucket...");
-            VersionListing versionListing = s3.listVersions(new ListVersionsRequest().withBucketName(bucketName));
+            VersionListing versionListing = this.s3.listVersions(new ListVersionsRequest().withBucketName(bucketName));
             while (true) {
                 for (S3VersionSummary vs : versionListing.getVersionSummaries()) {
-                    s3.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
+                    this.s3.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
                 }
 
                 // more versionListing to retrieve?
                 if (versionListing.isTruncated()) {
-                    versionListing = s3.listNextBatchOfVersions(versionListing);
+                    versionListing = this.s3.listNextBatchOfVersions(versionListing);
                 } else {
                     break;
                 }
@@ -167,7 +167,7 @@ public class S3 {
             System.out.println(" - done!");
 
             System.out.println(" - deleting bucket...");
-            s3.deleteBucket(bucketName);
+            this.s3.deleteBucket(bucketName);
             result = true;
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
@@ -217,7 +217,7 @@ public class S3 {
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
     public ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
-        return s3.listObjects(listObjectsRequest);
+        return this.s3.listObjects(listObjectsRequest);
     }
 
     /**
@@ -247,7 +247,7 @@ public class S3 {
     public boolean putObject(String bucketName, String keyName, String filePath) {
         System.out.format("Uploading [%s] to S3 bucket [%s], file path: [%s]...\n", keyName, bucketName, filePath);
         try {
-            s3.putObject(bucketName, keyName, new File(filePath));
+            this.s3.putObject(bucketName, keyName, new File(filePath));
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
             System.err.println("Failure!");
@@ -269,7 +269,7 @@ public class S3 {
         boolean result = false;
         try {
             System.out.format("Uploading [%s] to S3 bucket [%s]...\n", putObjectRequest.getKey(), putObjectRequest.getBucketName());
-            s3.putObject(putObjectRequest);
+            this.s3.putObject(putObjectRequest);
             result = true;
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
