@@ -2,6 +2,7 @@ package com.linklogis;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -96,8 +97,15 @@ public class S3 {
             this.s3.createBucket(bucketName);
             result = true;
             System.out.println("Done!");
+        } catch (AmazonS3Exception e) {
+            if (e.getErrorCode().equals("BucketAlreadyOwnedByYou")) {
+                System.err.println(e.getErrorMessage());
+            } else {
+                e.printStackTrace();
+            }
+            System.err.println("Failure!");
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
             System.err.println("Failure!");
         }
         return result;
@@ -169,7 +177,7 @@ public class S3 {
             result = true;
             System.out.println("Done!");
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
             System.err.println("Failure!");
         }
         return result;
@@ -249,7 +257,6 @@ public class S3 {
             result = true;
             System.out.println("Done!");
         } catch (Exception e) {
-            System.err.println(e.getMessage());
             e.printStackTrace();
             System.err.println("Failure!");
         }

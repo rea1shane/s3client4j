@@ -23,7 +23,6 @@ public class S3Test {
     String downloadsFilePath = "/Users/shane/Downloads/response2.json";
     String key = "response.json";
     String prefix = "test";
-    Map<String, String> metadata = new HashMap<>();
 
     /**
      * {@link S3#listBuckets()}
@@ -126,7 +125,8 @@ public class S3Test {
     public void testPutObjectWithStream() throws IOException {
         InputStream input = new FileInputStream(desktopFilePath);
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        metadata.put("用途", "测试");
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("usage", "test");
         objectMetadata.setUserMetadata(metadata);
         System.out.println(s3Object.putObject(bucketName, key, input, objectMetadata));
         input.close();
