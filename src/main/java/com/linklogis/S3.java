@@ -246,16 +246,27 @@ public class S3 {
 
     /**
      * <p>
-     * 下载对象
+     * 获取对象
      * </p>
      *
-     * @param bucketName   桶的名称
-     * @param key          对象的键
-     * @param outputStream 文件输出流
-     * @return 执行结果
+     * @param bucketName 桶的名称
+     * @param key        对象的键
+     * @return S3 对象
      */
-    public String downloadObject(String bucketName, String key, OutputStream outputStream) {
-        return downloadObject(new GetObjectRequest(bucketName, key), outputStream);
+    public S3Object getObject(String bucketName, String key) {
+        return getObject(new GetObjectRequest(bucketName, key));
+    }
+
+    /**
+     * <p>
+     * 获取对象
+     * </p>
+     *
+     * @param getObjectRequest 请求对象，包含获取对象的所有选项
+     * @return S3 对象
+     */
+    public S3Object getObject(GetObjectRequest getObjectRequest) {
+        return this.s3.getObject(getObjectRequest);
     }
 
     /**
@@ -263,16 +274,15 @@ public class S3 {
      * 下载对象
      * </p>
      *
-     * @param getObjectRequest 请求对象，包含上传对象的所有选项
-     * @param outputStream     文件输出流
+     * @param s3Object     S3 对象
+     * @param outputStream 文件输出流
      * @return 执行结果
      */
-    public String downloadObject(GetObjectRequest getObjectRequest, OutputStream outputStream) {
+    public String downloadObject(S3Object s3Object, OutputStream outputStream) {
         String msg = "OK";
         try {
-            System.out.format("Downloading [%s] from S3 bucket [%s]...\n", getObjectRequest.getKey(), getObjectRequest.getBucketName());
-            S3Object o = this.s3.getObject(getObjectRequest);
-            S3ObjectInputStream inputStream = o.getObjectContent();
+            System.out.format("Downloading [%s] from S3 bucket [%s]...\n", s3Object.getKey(), s3Object.getBucketName());
+            S3ObjectInputStream inputStream = s3Object.getObjectContent();
             byte[] readBuf = new byte[1024];
             int readLen;
             while ((readLen = inputStream.read(readBuf)) > 0) {
