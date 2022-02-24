@@ -8,8 +8,11 @@ import com.linklogis.override.ListObjectsRequest;
 import org.junit.Test;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +125,15 @@ public class S3Test {
         objectMetadata.setUserMetadata(metadata);
         System.out.println(s3Object.putObject(bucketName, key, input, objectMetadata));
         input.close();
+    }
+
+    /**
+     * {@link S3#getObject(String, String, OutputStream)}
+     */
+    @Test
+    public void testGetObject() throws FileNotFoundException {
+        FileOutputStream outputStream = new FileOutputStream(key);
+        s3Object.getObject(bucketName, key, outputStream);
     }
 
 }

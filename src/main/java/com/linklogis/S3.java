@@ -7,13 +7,17 @@ import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.linklogis.override.ListObjectsRequest;
 import com.linklogis.override.PutObjectRequest;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public class S3 {
@@ -204,7 +208,7 @@ public class S3 {
 
     /**
      * <p>
-     * 上传本地文件到指定的桶，并且指定对象的键
+     * 上传文件
      * </p>
      *
      * @param bucketName 桶的名称
@@ -233,6 +237,41 @@ public class S3 {
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
             msg = e.getErrorMessage();
+            System.err.println(msg);
+            System.err.println("Failure!");
+        }
+        return msg;
+    }
+
+    /**
+     * <p>
+     * 下载文件
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param key        对象的键
+     * @return 执行结果
+     */
+    public String getObject(String bucketName, String key, OutputStream outputStream) {
+        String msg = "OK";
+        try {
+            System.out.format("Downloading [%s] from S3 bucket [%s]...\n", key, bucketName);
+            S3Object o = s3.getObject(bucketName, key);
+            S3ObjectInputStream inputStream = o.getObjectContent();
+            byte[] readBuf = new byte[1024];
+            int readLen;
+            while ((readLen = inputStream.read(readBuf)) > 0) {
+                outputStream.write(readBuf, 0, readLen);
+            }
+            inputStream.close();
+            outputStream.close();
+            System.out.println("Done!");
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
+            System.err.println(msg);
+            System.err.println("Failure!");
+        } catch (IOException e) {
+            msg = e.getMessage();
             System.err.println(msg);
             System.err.println("Failure!");
         }
