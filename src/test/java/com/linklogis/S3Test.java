@@ -128,12 +128,12 @@ public class S3Test {
     }
 
     /**
-     * {@link S3#getObject(String, String, OutputStream)}
+     * {@link S3#downloadObject(String, String, OutputStream)}
      */
     @Test
-    public void testGetObject() throws FileNotFoundException {
+    public void testDownloadObject() throws FileNotFoundException {
         FileOutputStream outputStream = new FileOutputStream(key);
-        s3Object.getObject(bucketName, key, outputStream);
+        s3Object.downloadObject(bucketName, key, outputStream);
     }
 
 }
