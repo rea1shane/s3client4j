@@ -249,19 +249,29 @@ public class S3 {
      * 下载文件
      * </p>
      *
-     * @param bucketName 桶的名称
-     * @param key        对象的键
+     * @param bucketName   桶的名称
+     * @param key          对象的键
+     * @param outputStream 文件输出流
      * @return 执行结果
      */
     public String getObject(String bucketName, String key, OutputStream outputStream) {
         return getObject(new GetObjectRequest(bucketName, key), outputStream);
     }
 
+    /**
+     * <p>
+     * 下载文件
+     * </p>
+     *
+     * @param getObjectRequest 请求对象，包含上传对象的所有选项
+     * @param outputStream     文件输出流
+     * @return 执行结果
+     */
     public String getObject(GetObjectRequest getObjectRequest, OutputStream outputStream) {
         String msg = "OK";
         try {
             System.out.format("Downloading [%s] from S3 bucket [%s]...\n", getObjectRequest.getKey(), getObjectRequest.getBucketName());
-            S3Object o = s3.getObject(getObjectRequest);
+            S3Object o = this.s3.getObject(getObjectRequest);
             S3ObjectInputStream inputStream = o.getObjectContent();
             byte[] readBuf = new byte[1024];
             int readLen;
