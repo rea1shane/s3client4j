@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.linklogis.override.GetObjectRequest;
 import com.linklogis.override.ListObjectsRequest;
 import com.linklogis.override.PutObjectRequest;
 
@@ -253,10 +254,14 @@ public class S3 {
      * @return 执行结果
      */
     public String getObject(String bucketName, String key, OutputStream outputStream) {
+        return getObject(new GetObjectRequest(bucketName, key), outputStream);
+    }
+
+    public String getObject(GetObjectRequest getObjectRequest, OutputStream outputStream) {
         String msg = "OK";
         try {
-            System.out.format("Downloading [%s] from S3 bucket [%s]...\n", key, bucketName);
-            S3Object o = s3.getObject(bucketName, key);
+            System.out.format("Downloading [%s] from S3 bucket [%s]...\n", getObjectRequest.getKey(), getObjectRequest.getBucketName());
+            S3Object o = s3.getObject(getObjectRequest);
             S3ObjectInputStream inputStream = o.getObjectContent();
             byte[] readBuf = new byte[1024];
             int readLen;
