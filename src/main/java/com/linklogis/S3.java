@@ -13,6 +13,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.linklogis.override.CopyObjectRequest;
+import com.linklogis.override.DeleteObjectRequest;
 import com.linklogis.override.GetObjectRequest;
 import com.linklogis.override.ListObjectsRequest;
 import com.linklogis.override.PutObjectRequest;
@@ -362,10 +363,22 @@ public class S3 {
      * @return 执行结果
      */
     public String deleteObject(String bucketName, String key) {
+        return deleteObject(new DeleteObjectRequest(bucketName, key));
+    }
+
+    /**
+     * <p>
+     * 删除对象
+     * </p>
+     *
+     * @param deleteObjectRequest 请求对象，包含删除对象的所有选项
+     * @return 执行结果
+     */
+    public String deleteObject(DeleteObjectRequest deleteObjectRequest) {
         String msg = "OK";
         try {
-            System.out.format("Deleting object [%s] from S3 bucket [%s]...\n", key, bucketName);
-            s3.deleteObject(bucketName, key);
+            System.out.format("Deleting object [%s] from S3 bucket [%s]...\n", deleteObjectRequest.getKey(), deleteObjectRequest.getBucketName());
+            this.s3.deleteObject(deleteObjectRequest);
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
             msg = e.getErrorMessage();
