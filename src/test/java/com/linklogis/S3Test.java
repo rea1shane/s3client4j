@@ -22,10 +22,12 @@ public class S3Test {
 
     final static S3 s3Instance = new S3();
 
-    String bucketName = "create-by-java-sdk";
+    String sourceBucketName = "create-by-java-sdk";
+    String destinationBucketName = "create-by-java-sdk2";
     String desktopFilePath = "/Users/shane/Desktop/response2.json";
     String downloadsFilePath = "/Users/shane/Downloads/response2.json";
-    String key = "response.json";
+    String sourceKey = "response.json";
+    String destinationKey = "copy_test.json";
     String prefix = "test";
 
     /**
@@ -49,7 +51,7 @@ public class S3Test {
      */
     @Test
     public void testCheckBucketExist() {
-        System.out.println(s3Instance.checkBucketExist(bucketName));
+        System.out.println(s3Instance.checkBucketExist(sourceBucketName));
     }
 
     /**
@@ -59,7 +61,7 @@ public class S3Test {
      */
     @Test
     public void testGetBucket() {
-        System.out.println(s3Instance.getBucket(bucketName));
+        System.out.println(s3Instance.getBucket(sourceBucketName));
     }
 
     /**
@@ -69,7 +71,7 @@ public class S3Test {
      */
     @Test
     public void testCreateBucket() {
-        System.out.println(s3Instance.createBucket(bucketName));
+        System.out.println(s3Instance.createBucket(sourceBucketName));
     }
 
     /**
@@ -79,7 +81,7 @@ public class S3Test {
      */
     @Test
     public void testDeleteBucket() {
-        System.out.println(s3Instance.deleteBucket(bucketName));
+        System.out.println(s3Instance.deleteBucket(sourceBucketName));
     }
 
     /**
@@ -89,8 +91,8 @@ public class S3Test {
      */
     @Test
     public void testListObjects() {
-        ObjectListing objectListing = s3Instance.listObjects(bucketName);
-        System.out.format("Objects in S3 bucket [%s] are:\n", bucketName);
+        ObjectListing objectListing = s3Instance.listObjects(sourceBucketName);
+        System.out.format("Objects in S3 bucket [%s] are:\n", sourceBucketName);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
         }
@@ -103,8 +105,8 @@ public class S3Test {
      */
     @Test
     public void testListObjectsWithPrefix() {
-        ObjectListing objectListing = s3Instance.listObjects(bucketName, prefix);
-        System.out.format("Objects in S3 bucket [%s] with prefix [%s] are:\n", bucketName, prefix);
+        ObjectListing objectListing = s3Instance.listObjects(sourceBucketName, prefix);
+        System.out.format("Objects in S3 bucket [%s] with prefix [%s] are:\n", sourceBucketName, prefix);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
         }
@@ -118,7 +120,7 @@ public class S3Test {
     @Test
     public void testListObjectsWithRequest() {
         ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
-        listObjectsRequest.setBucketName(bucketName);
+        listObjectsRequest.setBucketName(sourceBucketName);
         listObjectsRequest.setPrefix(prefix);
 
         ObjectListing objectListing = s3Instance.listObjects(listObjectsRequest);
@@ -142,7 +144,7 @@ public class S3Test {
         Map<String, String> metadata = new HashMap<>();
         metadata.put("usage", "test");
         objectMetadata.setUserMetadata(metadata);
-        System.out.println(s3Instance.putObject(bucketName, key, input, objectMetadata));
+        System.out.println(s3Instance.putObject(sourceBucketName, sourceKey, input, objectMetadata));
         input.close();
     }
 
@@ -156,9 +158,20 @@ public class S3Test {
      */
     @Test
     public void testDownloadObject() throws FileNotFoundException {
-        FileOutputStream outputStream = new FileOutputStream(key);
-        S3Object s3Object = s3Instance.getObject(bucketName, key);
+        FileOutputStream outputStream = new FileOutputStream(sourceKey);
+        S3Object s3Object = s3Instance.getObject(sourceBucketName, sourceKey);
         s3Instance.downloadObject(s3Object, outputStream);
+    }
+
+
+    /**
+     * <p>
+     * {@link S3#copyObject(String, String, String, String)}
+     * </p>
+     */
+    @Test
+    public void testCopyObject() {
+        s3Instance.copyObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey);
     }
 
 }

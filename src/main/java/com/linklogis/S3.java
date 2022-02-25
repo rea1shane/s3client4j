@@ -166,7 +166,7 @@ public class S3 {
 
     /**
      * <p>
-     * 获取指定桶中的对象信息
+     * 获取指定桶中的对象信息，只能获取到对象的摘要信息
      * </p>
      * <p>
      * 如果想要添加更多请求配置，请调用 {@link S3#listObjects(ListObjectsRequest)}
@@ -181,7 +181,7 @@ public class S3 {
 
     /**
      * <p>
-     * 获取指定桶、指定前缀中的对象信息
+     * 获取指定桶、指定前缀中的对象信息，只能获取到对象的摘要信息
      * </p>
      * <p>
      * 如果想要添加更多请求配置，请调用 {@link S3#listObjects(ListObjectsRequest)}
@@ -197,7 +197,7 @@ public class S3 {
 
     /**
      * <p>
-     * 获取桶中的对象信息，通过配置请求参数来筛选 objects
+     * 获取桶中的对象信息，通过配置请求参数来筛选对象，只能获取到对象的摘要信息
      * </p>
      *
      * @param listObjectsRequest 请求对象，包含列出指定桶中的对象的所有选项
@@ -297,6 +297,31 @@ public class S3 {
             System.err.println("Failure!");
         } catch (IOException e) {
             msg = e.getMessage();
+            System.err.println(msg);
+            System.err.println("Failure!");
+        }
+        return msg;
+    }
+
+    /**
+     * <p>
+     * 拷贝对象
+     * </p>
+     *
+     * @param sourceBucketName      源桶名称
+     * @param sourceKey             源对象键
+     * @param destinationBucketName 目标桶名称
+     * @param destinationKey        目标对象键
+     * @return 执行结果
+     */
+    public String copyObject(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey) {
+        String msg = "OK";
+        try {
+            System.out.format("Copying object, from [%s]/[%s] to [%s]/[%s]...\n", sourceBucketName, sourceKey, destinationBucketName, destinationKey);
+            this.s3.copyObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey);
+            System.out.println("Done!");
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
             System.err.println(msg);
             System.err.println("Failure!");
         }
