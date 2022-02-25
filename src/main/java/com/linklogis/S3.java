@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.linklogis.override.CopyObjectRequest;
 import com.linklogis.override.GetObjectRequest;
 import com.linklogis.override.ListObjectsRequest;
 import com.linklogis.override.PutObjectRequest;
@@ -326,10 +327,14 @@ public class S3 {
      * @return 执行结果
      */
     public String copyObject(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey) {
+        return copyObject(new CopyObjectRequest(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
+    }
+
+    public String copyObject(CopyObjectRequest copyObjectRequest) {
         String msg = "OK";
         try {
-            System.out.format("Copying object, from [%s]/[%s] to [%s]/[%s]...\n", sourceBucketName, sourceKey, destinationBucketName, destinationKey);
-            this.s3.copyObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey);
+            System.out.format("Copying object, from [%s]/[%s] to [%s]/[%s]...\n", copyObjectRequest.getSourceBucketName(), copyObjectRequest.getSourceKey(), copyObjectRequest.getDestinationBucketName(), copyObjectRequest.getDestinationKey());
+            this.s3.copyObject(copyObjectRequest);
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
             msg = e.getErrorMessage();
