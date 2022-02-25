@@ -266,6 +266,7 @@ public class S3 {
      * @return S3 对象
      */
     public S3Object getObject(GetObjectRequest getObjectRequest) {
+        System.out.println(getObjectRequest); // 测试输出
         return this.s3.getObject(getObjectRequest);
     }
 

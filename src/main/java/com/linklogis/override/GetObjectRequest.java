@@ -16,28 +16,36 @@ import com.amazonaws.services.s3.model.S3ObjectId;
 public class GetObjectRequest extends com.amazonaws.services.s3.model.GetObjectRequest {
 
     /**
+     * <p>
      * {@link com.amazonaws.services.s3.model.GetObjectRequest#GetObjectRequest(String, String)}
+     * </p>
      */
     public GetObjectRequest(String bucketName, String key) {
         super(bucketName, key);
     }
 
     /**
+     * <p>
      * {@link com.amazonaws.services.s3.model.GetObjectRequest#GetObjectRequest(String, String, String)}
+     * </p>
      */
     public GetObjectRequest(String bucketName, String key, String versionId) {
         super(bucketName, key, versionId);
     }
 
     /**
+     * <p>
      * {@link com.amazonaws.services.s3.model.GetObjectRequest#GetObjectRequest(S3ObjectId)}
+     * </p>
      */
     public GetObjectRequest(S3ObjectId s3ObjectId) {
         super(s3ObjectId);
     }
 
     /**
+     * <p>
      * {@link com.amazonaws.services.s3.model.GetObjectRequest#GetObjectRequest(String, String, boolean)}
+     * </p>
      */
     public GetObjectRequest(String bucketName, String key, boolean isRequesterPays) {
         super(bucketName, key, isRequesterPays);
@@ -45,10 +53,10 @@ public class GetObjectRequest extends com.amazonaws.services.s3.model.GetObjectR
 
     @Override
     public String toString() {
-        return "* BucketName     : " + getBucketName() + "\n"
-                + "* Key            : " + getKey() + "\n"
-                + "* VersionId      : " + getVersionId() + "\n"
-                + "* S3ObjectId     : " + getS3ObjectId() + "\n"
-                + "* IsRequesterPays: " + isRequesterPays();
+        return " * Bucket Name      : " + getBucketName() + "\n"
+                + " * Key              : " + getKey() + "\n"
+                + " * VersionId        : " + getVersionId() + "\n"
+                + " * S3ObjectId       : " + getS3ObjectId() + "\n"
+                + " * Is Requester Pays: " + isRequesterPays();
     }
 }
