@@ -181,4 +181,14 @@ public class S3Test {
         System.out.println(s3Instance.deleteObject(destinationBucketName, destinationKey));
     }
 
+    /**
+     * <p>
+     * {@link S3#moveObject(String, String, String, String)}
+     * </p>
+     */
+    @Test
+    public void testMoveObject() {
+        System.out.println(s3Instance.moveObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
+    }
+
 }

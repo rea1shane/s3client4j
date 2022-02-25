@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+// TODO 操作添加审计，每一次操作都会生成 id，子操作 id 与父操作 id 关联
 public class S3 {
 
     private final AmazonS3 s3;
@@ -95,7 +96,7 @@ public class S3 {
      * </p>
      *
      * @param bucketName 桶的名称
-     * @return 执行结果
+     * @return 操作结果
      */
     public String createBucket(String bucketName) {
         String msg = "OK";
@@ -117,7 +118,7 @@ public class S3 {
      * </p>
      *
      * @param bucketName 桶的名称
-     * @return 执行结果
+     * @return 操作结果
      */
     public String deleteBucket(String bucketName) {
         String msg = "OK";
@@ -213,7 +214,7 @@ public class S3 {
      * @param key        对象的键
      * @param input      文件流
      * @param metadata   元数据
-     * @return 执行结果
+     * @return 操作结果
      */
     public String putObject(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
         return putObject(new PutObjectRequest(bucketName, key, input, metadata));
@@ -225,7 +226,7 @@ public class S3 {
      * </p>
      *
      * @param putObjectRequest 请求对象，包含上传对象的所有选项
-     * @return 执行结果
+     * @return 操作结果
      */
     public String putObject(PutObjectRequest putObjectRequest) {
         String msg = "OK";
@@ -289,7 +290,7 @@ public class S3 {
      *
      * @param s3Object     S3 对象
      * @param outputStream 文件输出流
-     * @return 执行结果
+     * @return 操作结果
      */
     public String downloadObject(S3Object s3Object, OutputStream outputStream) {
         String msg = "OK";
@@ -325,7 +326,7 @@ public class S3 {
      * @param sourceKey             源对象键
      * @param destinationBucketName 目标桶名称
      * @param destinationKey        目标对象键
-     * @return 执行结果
+     * @return 操作结果
      */
     public String copyObject(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey) {
         return copyObject(new CopyObjectRequest(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
@@ -337,7 +338,7 @@ public class S3 {
      * </p>
      *
      * @param copyObjectRequest 请求对象，包含拷贝对象的所有选项
-     * @return 执行结果
+     * @return 操作结果
      */
     public String copyObject(CopyObjectRequest copyObjectRequest) {
         String msg = "OK";
@@ -360,7 +361,7 @@ public class S3 {
      *
      * @param bucketName 桶名称
      * @param key        对象键
-     * @return 执行结果
+     * @return 操作结果
      */
     public String deleteObject(String bucketName, String key) {
         return deleteObject(new DeleteObjectRequest(bucketName, key));
@@ -372,17 +373,43 @@ public class S3 {
      * </p>
      *
      * @param deleteObjectRequest 请求对象，包含删除对象的所有选项
-     * @return 执行结果
+     * @return 操作结果
      */
     public String deleteObject(DeleteObjectRequest deleteObjectRequest) {
         String msg = "OK";
         try {
             System.out.format("Deleting object [%s] from S3 bucket [%s]...\n", deleteObjectRequest.getKey(), deleteObjectRequest.getBucketName());
+            System.out.println("Params:\n" + deleteObjectRequest); // debug
             this.s3.deleteObject(deleteObjectRequest);
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
             msg = e.getErrorMessage();
             System.err.println(msg);
+            System.err.println("Failure!");
+        }
+        return msg;
+    }
+
+    /**
+     * <p>
+     * 移动对象；当源桶与目标桶相同时，也可以被用作重命名对象
+     * </p>
+     *
+     * @param sourceBucketName      源桶名称
+     * @param sourceKey             源对象键
+     * @param destinationBucketName 目标桶名称
+     * @param destinationKey        目标对象键
+     * @return 操作结果
+     */
+    public String moveObject(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey) {
+        System.out.format("Moving object, from [%s] / [%s] to [%s] / [%s]...\n", sourceBucketName, sourceKey, destinationBucketName, destinationKey);
+        String msg = copyObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey);
+        if (msg.equals("OK")) {
+            msg = deleteObject(sourceBucketName, sourceKey);
+        }
+        if (msg.equals("OK")) {
+            System.out.println("Done!");
+        } else {
             System.err.println("Failure!");
         }
         return msg;
