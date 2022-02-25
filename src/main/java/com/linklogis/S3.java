@@ -168,9 +168,6 @@ public class S3 {
      * <p>
      * 获取指定桶中的对象信息，只能获取到对象的摘要信息
      * </p>
-     * <p>
-     * 如果想要添加更多请求配置，请调用 {@link S3#listObjects(ListObjectsRequest)}
-     * </p>
      *
      * @param bucketName 桶的名称
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
@@ -182,9 +179,6 @@ public class S3 {
     /**
      * <p>
      * 获取指定桶、指定前缀中的对象信息，只能获取到对象的摘要信息
-     * </p>
-     * <p>
-     * 如果想要添加更多请求配置，请调用 {@link S3#listObjects(ListObjectsRequest)}
      * </p>
      *
      * @param bucketName 桶的名称
@@ -246,7 +240,7 @@ public class S3 {
 
     /**
      * <p>
-     * 获取对象
+     * 获取对象的最新版本
      * </p>
      *
      * @param bucketName 桶的名称
@@ -255,6 +249,20 @@ public class S3 {
      */
     public S3Object getObject(String bucketName, String key) {
         return getObject(new GetObjectRequest(bucketName, key));
+    }
+
+    /**
+     * <p>
+     * 获取对象的指定版本
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param key        对象的键
+     * @param versionId  对象的版本 ID
+     * @return S3 对象
+     */
+    public S3Object getObject(String bucketName, String key, String versionId) {
+        return getObject(new GetObjectRequest(bucketName, key, versionId));
     }
 
     /**
