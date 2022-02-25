@@ -198,6 +198,7 @@ public class S3 {
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
     public ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
+        System.out.println("Params:\n" + listObjectsRequest); // debug
         return this.s3.listObjects(listObjectsRequest);
     }
 
@@ -228,6 +229,7 @@ public class S3 {
         String msg = "OK";
         try {
             System.out.format("Uploading [%s] to S3 bucket [%s]...\n", putObjectRequest.getKey(), putObjectRequest.getBucketName());
+            System.out.println("Params:\n" + putObjectRequest); // debug
             this.s3.putObject(putObjectRequest);
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
@@ -274,7 +276,7 @@ public class S3 {
      * @return S3 对象
      */
     public S3Object getObject(GetObjectRequest getObjectRequest) {
-        System.out.println(getObjectRequest); // 测试输出
+        System.out.println("Params:\n" + getObjectRequest); // debug
         return this.s3.getObject(getObjectRequest);
     }
 

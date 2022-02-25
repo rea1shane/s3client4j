@@ -124,8 +124,6 @@ public class S3Test {
         listObjectsRequest.setPrefix(prefix);
 
         ObjectListing objectListing = s3Instance.listObjects(listObjectsRequest);
-        System.out.println("ListObjectsRequest params are:");
-        System.out.println(listObjectsRequest);
         System.out.println("Objects in S3 bucket are:");
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
