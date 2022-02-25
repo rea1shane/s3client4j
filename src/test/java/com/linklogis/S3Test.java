@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.linklogis.override.ListObjectsRequest;
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -107,24 +106,6 @@ public class S3Test {
     public void testListObjectsWithPrefix() {
         ObjectListing objectListing = s3Instance.listObjects(sourceBucketName, prefix);
         System.out.format("Objects in S3 bucket [%s] with prefix [%s] are:\n", sourceBucketName, prefix);
-        for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
-            System.out.println("* " + summary.getKey());
-        }
-    }
-
-    /**
-     * <p>
-     * {@link S3#listObjects(ListObjectsRequest)}
-     * </p>
-     */
-    @Test
-    public void testListObjectsWithRequest() {
-        ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
-        listObjectsRequest.setBucketName(sourceBucketName);
-        listObjectsRequest.setPrefix(prefix);
-
-        ObjectListing objectListing = s3Instance.listObjects(listObjectsRequest);
-        System.out.println("Objects in S3 bucket are:");
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
         }

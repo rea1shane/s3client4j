@@ -200,7 +200,7 @@ public class S3 {
      * @param listObjectsRequest 请求对象，包含列出指定桶中的对象的所有选项
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
-    public ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
+    private ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
         System.out.println("Params:\n" + listObjectsRequest); // debug
         return this.s3.listObjects(listObjectsRequest);
     }
@@ -228,7 +228,7 @@ public class S3 {
      * @param putObjectRequest 请求对象，包含上传对象的所有选项
      * @return 操作结果
      */
-    public String putObject(PutObjectRequest putObjectRequest) {
+    private String putObject(PutObjectRequest putObjectRequest) {
         String msg = "OK";
         try {
             System.out.format("Uploading [%s] to S3 bucket [%s]...\n", putObjectRequest.getKey(), putObjectRequest.getBucketName());
@@ -278,7 +278,7 @@ public class S3 {
      * @param getObjectRequest 请求对象，包含获取对象的所有选项
      * @return S3 对象
      */
-    public S3Object getObject(GetObjectRequest getObjectRequest) {
+    private S3Object getObject(GetObjectRequest getObjectRequest) {
         System.out.println("Params:\n" + getObjectRequest); // debug
         return this.s3.getObject(getObjectRequest);
     }
@@ -340,7 +340,7 @@ public class S3 {
      * @param copyObjectRequest 请求对象，包含拷贝对象的所有选项
      * @return 操作结果
      */
-    public String copyObject(CopyObjectRequest copyObjectRequest) {
+    private String copyObject(CopyObjectRequest copyObjectRequest) {
         String msg = "OK";
         try {
             System.out.format("Copying object, from [%s] / [%s] to [%s] / [%s]...\n", copyObjectRequest.getSourceBucketName(), copyObjectRequest.getSourceKey(), copyObjectRequest.getDestinationBucketName(), copyObjectRequest.getDestinationKey());
@@ -375,7 +375,7 @@ public class S3 {
      * @param deleteObjectRequest 请求对象，包含删除对象的所有选项
      * @return 操作结果
      */
-    public String deleteObject(DeleteObjectRequest deleteObjectRequest) {
+    private String deleteObject(DeleteObjectRequest deleteObjectRequest) {
         String msg = "OK";
         try {
             System.out.format("Deleting object [%s] from S3 bucket [%s]...\n", deleteObjectRequest.getKey(), deleteObjectRequest.getBucketName());
