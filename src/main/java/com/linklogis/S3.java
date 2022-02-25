@@ -279,8 +279,14 @@ public class S3 {
      * @return S3 对象
      */
     private S3Object getObject(GetObjectRequest getObjectRequest) {
-        System.out.println("Params:\n" + getObjectRequest); // debug
-        return this.s3.getObject(getObjectRequest);
+        S3Object s3Object = null;
+        try {
+            System.out.println("Params:\n" + getObjectRequest); // debug
+            s3Object = this.s3.getObject(getObjectRequest);
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+        }
+        return s3Object;
     }
 
     /**
@@ -295,6 +301,9 @@ public class S3 {
     public String downloadObject(S3Object s3Object, OutputStream outputStream) {
         String msg = "OK";
         try {
+            if (s3Object == null) {
+                return "The specified object does not exist.";
+            }
             System.out.format("Downloading [%s] from S3 bucket [%s]...\n", s3Object.getKey(), s3Object.getBucketName());
             S3ObjectInputStream inputStream = s3Object.getObjectContent();
             byte[] readBuf = new byte[1024];
