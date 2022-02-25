@@ -158,9 +158,8 @@ public class S3Test {
     public void testDownloadObject() throws FileNotFoundException {
         FileOutputStream outputStream = new FileOutputStream(sourceKey);
         S3Object s3Object = s3Instance.getObject(sourceBucketName, sourceKey);
-        s3Instance.downloadObject(s3Object, outputStream);
+        System.out.println(s3Instance.downloadObject(s3Object, outputStream));
     }
-
 
     /**
      * <p>
@@ -169,7 +168,17 @@ public class S3Test {
      */
     @Test
     public void testCopyObject() {
-        s3Instance.copyObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey);
+        System.out.println(s3Instance.copyObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
+    }
+
+    /**
+     * <p>
+     * {@link S3#deleteObject(String, String)}
+     * </p>
+     */
+    @Test
+    public void testDeleteObject() {
+        System.out.println(s3Instance.deleteObject(destinationBucketName, destinationKey));
     }
 
 }

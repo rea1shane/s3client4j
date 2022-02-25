@@ -330,11 +330,42 @@ public class S3 {
         return copyObject(new CopyObjectRequest(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
     }
 
+    /**
+     * <p>
+     * 拷贝对象
+     * </p>
+     *
+     * @param copyObjectRequest 请求对象，包含拷贝对象的所有选项
+     * @return 执行结果
+     */
     public String copyObject(CopyObjectRequest copyObjectRequest) {
         String msg = "OK";
         try {
-            System.out.format("Copying object, from [%s]/[%s] to [%s]/[%s]...\n", copyObjectRequest.getSourceBucketName(), copyObjectRequest.getSourceKey(), copyObjectRequest.getDestinationBucketName(), copyObjectRequest.getDestinationKey());
+            System.out.format("Copying object, from [%s] / [%s] to [%s] / [%s]...\n", copyObjectRequest.getSourceBucketName(), copyObjectRequest.getSourceKey(), copyObjectRequest.getDestinationBucketName(), copyObjectRequest.getDestinationKey());
             this.s3.copyObject(copyObjectRequest);
+            System.out.println("Done!");
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
+            System.err.println(msg);
+            System.err.println("Failure!");
+        }
+        return msg;
+    }
+
+    /**
+     * <p>
+     * 删除对象
+     * </p>
+     *
+     * @param bucketName 桶名称
+     * @param key        对象键
+     * @return 执行结果
+     */
+    public String deleteObject(String bucketName, String key) {
+        String msg = "OK";
+        try {
+            System.out.format("Deleting object [%s] from S3 bucket [%s]...\n", key, bucketName);
+            s3.deleteObject(bucketName, key);
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
             msg = e.getErrorMessage();
