@@ -14,7 +14,6 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.linklogis.override.CopyObjectRequest;
-import com.linklogis.override.DeleteObjectRequest;
 import com.linklogis.override.GetObjectRequest;
 import com.linklogis.override.ListObjectsRequest;
 import com.linklogis.override.PutObjectRequest;
@@ -131,7 +130,7 @@ public class S3 {
             ObjectListing objectListing = listObjects(bucketName);
             while (true) {
                 for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
-                    this.s3.deleteObject(bucketName, summary.getKey());
+                    deleteObject(bucketName, summary.getKey());
                 }
 
                 // more objectListing to retrieve?
@@ -368,7 +367,7 @@ public class S3 {
 
     /**
      * <p>
-     * 删除对象
+     * 删除指定对象
      * </p>
      *
      * @param bucketName 桶名称
@@ -376,30 +375,23 @@ public class S3 {
      * @return 操作结果
      */
     public String deleteObject(String bucketName, String key) {
-        return deleteObject(new DeleteObjectRequest(bucketName, key));
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = convert2KeyVersion(key, null);
+        return deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyVersions));
     }
 
     /**
      * <p>
-     * 删除对象
+     * 删除指定对象的指定版本
      * </p>
      *
-     * @param deleteObjectRequest 请求对象，包含删除对象的所有选项
+     * @param bucketName 桶名称
+     * @param key        对象键
      * @return 操作结果
      */
-    private String deleteObject(DeleteObjectRequest deleteObjectRequest) {
-        String msg = "OK";
-        try {
-            System.out.format("Deleting object [%s] from S3 bucket [%s]...\n", deleteObjectRequest.getKey(), deleteObjectRequest.getBucketName());
-            System.out.println("Params:\n" + deleteObjectRequest); // debug
-            this.s3.deleteObject(deleteObjectRequest);
-            System.out.println("Done!");
-        } catch (AmazonServiceException e) {
-            msg = e.getErrorMessage();
-            System.err.println(msg);
-            System.err.println("Failure!");
-        }
-        return msg;
+    // TODO 待测试
+    public String deleteObject(String bucketName, String key, String versionId) {
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = convert2KeyVersion(key, versionId);
+        return deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyVersions));
     }
 
     /**
@@ -430,6 +422,17 @@ public class S3 {
         return deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyVersions));
     }
 
+
+    /**
+     * @param key 对象键
+     * @return {@link DeleteObjectsRequest.KeyVersion} 列表
+     */
+    private List<DeleteObjectsRequest.KeyVersion> convert2KeyVersion(String key, String versionId) {
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = new ArrayList<>();
+        keyVersions.add(new DeleteObjectsRequest.KeyVersion(key, versionId));
+        return keyVersions;
+    }
+
     /**
      * @param keys 对象键组成的数组
      * @return {@link DeleteObjectsRequest.KeyVersion} 列表
@@ -448,8 +451,8 @@ public class S3 {
      */
     private List<DeleteObjectsRequest.KeyVersion> convert2KeyVersion(Map<String, String> keyWithVersions) {
         List<DeleteObjectsRequest.KeyVersion> keyVersions = new ArrayList<>();
-        keyWithVersions.forEach((key, version) -> {
-            keyVersions.add(new DeleteObjectsRequest.KeyVersion(key, version));
+        keyWithVersions.forEach((key, versionId) -> {
+            keyVersions.add(new DeleteObjectsRequest.KeyVersion(key, versionId));
         });
         return keyVersions;
     }
