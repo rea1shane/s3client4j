@@ -28,6 +28,7 @@ public class S3Test {
     String sourceKey = "response.json";
     String destinationKey = "copy_test.json";
     String prefix = "test";
+    String[] keys = {"delete1.json", "delete2.json", "delete3.json"};
 
     /**
      * <p>
@@ -160,6 +161,16 @@ public class S3Test {
     @Test
     public void testDeleteObject() {
         System.out.println(s3Instance.deleteObject(destinationBucketName, destinationKey));
+    }
+
+    /**
+     * <p>
+     * {@link S3#deleteObjects(String, String[])}
+     * </p>
+     */
+    @Test
+    public void testDeleteObjectsWithKeys() {
+        System.out.println(s3Instance.deleteObjects(sourceBucketName, keys));
     }
 
     /**

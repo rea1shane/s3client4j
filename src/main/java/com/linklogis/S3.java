@@ -4,6 +4,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -21,7 +22,9 @@ import com.linklogis.override.PutObjectRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 // TODO 操作添加审计，每一次操作都会生成 id，子操作 id 与父操作 id 关联
 public class S3 {
@@ -390,6 +393,72 @@ public class S3 {
             System.out.format("Deleting object [%s] from S3 bucket [%s]...\n", deleteObjectRequest.getKey(), deleteObjectRequest.getBucketName());
             System.out.println("Params:\n" + deleteObjectRequest); // debug
             this.s3.deleteObject(deleteObjectRequest);
+            System.out.println("Done!");
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
+            System.err.println(msg);
+            System.err.println("Failure!");
+        }
+        return msg;
+    }
+
+    /**
+     * <p>
+     * 删除一组对象
+     * </p>
+     *
+     * @param bucketName 桶名称
+     * @param keys       对象键组成的数组
+     * @return 操作结果
+     */
+    public String deleteObjects(String bucketName, String[] keys) {
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = convert2KeyVersion(keys);
+        return deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyVersions));
+    }
+
+    /**
+     * <p>
+     * 删除一组对象的指定版本
+     * </p>
+     *
+     * @param bucketName      桶名称
+     * @param keyWithVersions 对象的键与版本 ID 组成的字典
+     * @return 操作结果
+     */
+    public String deleteObjects(String bucketName, Map<String, String> keyWithVersions) {
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = convert2KeyVersion(keyWithVersions);
+        return deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyVersions));
+    }
+
+    /**
+     * @param keys 对象键组成的数组
+     * @return {@link DeleteObjectsRequest.KeyVersion} 列表
+     */
+    private List<DeleteObjectsRequest.KeyVersion> convert2KeyVersion(String[] keys) {
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = new ArrayList<>();
+        for (String key : keys) {
+            keyVersions.add(new DeleteObjectsRequest.KeyVersion(key));
+        }
+        return keyVersions;
+    }
+
+    /**
+     * @param keyWithVersions 对象的键与版本 ID 组成的字典
+     * @return {@link DeleteObjectsRequest.KeyVersion} 列表
+     */
+    private List<DeleteObjectsRequest.KeyVersion> convert2KeyVersion(Map<String, String> keyWithVersions) {
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = new ArrayList<>();
+        keyWithVersions.forEach((key, version) -> {
+            keyVersions.add(new DeleteObjectsRequest.KeyVersion(key, version));
+        });
+        return keyVersions;
+    }
+
+    private String deleteObjects(DeleteObjectsRequest deleteObjectsRequest) {
+        String msg = "OK";
+        try {
+            System.out.format("Deleting objects from S3 bucket [%s]...\n", deleteObjectsRequest.getBucketName());
+            this.s3.deleteObjects(deleteObjectsRequest);
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
             msg = e.getErrorMessage();
