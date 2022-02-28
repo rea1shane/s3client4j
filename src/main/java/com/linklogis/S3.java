@@ -386,6 +386,7 @@ public class S3 {
      *
      * @param bucketName 桶名称
      * @param key        对象键
+     * @param versionId  版本 ID
      * @return 操作结果
      */
     // TODO 待测试
@@ -413,12 +414,12 @@ public class S3 {
      * 删除一组对象的指定版本
      * </p>
      *
-     * @param bucketName      桶名称
-     * @param keyWithVersions 对象的键与版本 ID 组成的字典
+     * @param bucketName        桶名称
+     * @param keyWithVersionIds 对象的键与版本 ID 组成的字典
      * @return 操作结果
      */
-    public String deleteObjects(String bucketName, Map<String, String> keyWithVersions) {
-        List<DeleteObjectsRequest.KeyVersion> keyVersions = convert2KeyVersion(keyWithVersions);
+    public String deleteObjects(String bucketName, Map<String, String> keyWithVersionIds) {
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = convert2KeyVersion(keyWithVersionIds);
         return deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyVersions));
     }
 
@@ -446,12 +447,12 @@ public class S3 {
     }
 
     /**
-     * @param keyWithVersions 对象的键与版本 ID 组成的字典
+     * @param keyWithVersionIds 对象的键与版本 ID 组成的字典
      * @return {@link DeleteObjectsRequest.KeyVersion} 列表
      */
-    private List<DeleteObjectsRequest.KeyVersion> convert2KeyVersion(Map<String, String> keyWithVersions) {
+    private List<DeleteObjectsRequest.KeyVersion> convert2KeyVersion(Map<String, String> keyWithVersionIds) {
         List<DeleteObjectsRequest.KeyVersion> keyVersions = new ArrayList<>();
-        keyWithVersions.forEach((key, versionId) -> {
+        keyWithVersionIds.forEach((key, versionId) -> {
             keyVersions.add(new DeleteObjectsRequest.KeyVersion(key, versionId));
         });
         return keyVersions;
