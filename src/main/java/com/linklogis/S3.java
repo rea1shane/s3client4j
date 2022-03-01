@@ -424,7 +424,8 @@ public class S3 {
 
 
     /**
-     * @param key 对象键
+     * @param key       对象键
+     * @param versionId 版本 ID，如果要删除对象的所有版本的话传 null
      * @return {@link DeleteObjectsRequest.KeyVersion} 列表
      */
     private List<DeleteObjectsRequest.KeyVersion> convert2KeyVersion(String key, String versionId) {
