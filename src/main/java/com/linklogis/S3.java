@@ -8,7 +8,6 @@ import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.Grant;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -513,17 +512,16 @@ public class S3 {
      * @param bucketName 桶名称
      * @return 访问授权列表
      */
-    public List<Grant> getBucketAcl(String bucketName) {
-        List<Grant> grants = null;
+    public AccessControlList getBucketAcl(String bucketName) {
+        AccessControlList acl = null;
         try {
             System.out.printf("Retrieving ACL for bucket [%s]\n", bucketName);
-            AccessControlList acl = s3.getBucketAcl(bucketName);
-            grants = acl.getGrantsAsList();
+            acl = this.s3.getBucketAcl(bucketName);
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
             System.err.println("Failure!");
         }
-        return grants;
+        return acl;
     }
 
 }

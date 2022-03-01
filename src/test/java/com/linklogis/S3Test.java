@@ -192,7 +192,8 @@ public class S3Test {
      */
     @Test
     public void testGetBucketAcl() {
-        List<Grant> grants = s3Instance.getBucketAcl(sourceBucketName);
+        AccessControlList acl = s3Instance.getBucketAcl(sourceBucketName);
+        List<Grant> grants = acl.getGrantsAsList();
         for (Grant grant : grants) {
             System.out.format(" * [%s]: %s\n", grant.getGrantee().getIdentifier(),
                     grant.getPermission().toString());
