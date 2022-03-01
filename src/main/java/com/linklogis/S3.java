@@ -515,8 +515,29 @@ public class S3 {
     public AccessControlList getBucketAcl(String bucketName) {
         AccessControlList acl = null;
         try {
-            System.out.printf("Retrieving ACL for bucket [%s]\n", bucketName);
+            System.out.printf("Retrieving ACL for bucket [%s]:\n", bucketName);
             acl = this.s3.getBucketAcl(bucketName);
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+            System.err.println("Failure!");
+        }
+        return acl;
+    }
+
+    /**
+     * <p>
+     * 获取桶的 acl
+     * </p>
+     *
+     * @param bucketName 桶名称
+     * @param key        对象的键
+     * @return 访问授权列表
+     */
+    public AccessControlList getObjectAcl(String bucketName, String key) {
+        AccessControlList acl = null;
+        try {
+            System.out.printf("Retrieving ACL for object [%s] in bucket [%s]: \n", key, bucketName);
+            acl = this.s3.getObjectAcl(bucketName, key);
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
             System.err.println("Failure!");

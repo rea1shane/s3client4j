@@ -200,4 +200,19 @@ public class S3Test {
         }
     }
 
+    /**
+     * <p>
+     * {@link S3#getObjectAcl(String, String)}
+     * </p>
+     */
+    @Test
+    public void testGetObjectAcl() {
+        AccessControlList acl = s3Instance.getObjectAcl(sourceBucketName, sourceKey);
+        List<Grant> grants = acl.getGrantsAsList();
+        for (Grant grant : grants) {
+            System.out.format(" * [%s]: %s\n", grant.getGrantee().getIdentifier(),
+                    grant.getPermission().toString());
+        }
+    }
+
 }
