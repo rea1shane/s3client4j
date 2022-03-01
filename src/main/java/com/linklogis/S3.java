@@ -4,19 +4,19 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
-import com.linklogis.override.CopyObjectRequest;
-import com.linklogis.override.GetObjectRequest;
-import com.linklogis.override.ListObjectsRequest;
-import com.linklogis.override.PutObjectRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -203,7 +203,6 @@ public class S3 {
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
      */
     private ObjectListing listObjects(ListObjectsRequest listObjectsRequest) {
-        System.out.println("Params:\n" + listObjectsRequest); // debug
         return this.s3.listObjects(listObjectsRequest);
     }
 
@@ -234,7 +233,6 @@ public class S3 {
         String msg = "OK";
         try {
             System.out.format("Uploading [%s] to S3 bucket [%s]...\n", putObjectRequest.getKey(), putObjectRequest.getBucketName());
-            System.out.println("Params:\n" + putObjectRequest); // debug
             this.s3.putObject(putObjectRequest);
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
@@ -284,7 +282,6 @@ public class S3 {
     private S3Object getObject(GetObjectRequest getObjectRequest) {
         S3Object s3Object = null;
         try {
-            System.out.println("Params:\n" + getObjectRequest); // debug
             s3Object = this.s3.getObject(getObjectRequest);
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
