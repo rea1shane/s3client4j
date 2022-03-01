@@ -3,10 +3,12 @@ package com.linklogis;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.Grant;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -456,6 +458,14 @@ public class S3 {
         return keyVersions;
     }
 
+    /**
+     * <p>
+     * 删除对象
+     * </p>
+     *
+     * @param deleteObjectsRequest 请求对象，包含删除对象的所有选项
+     * @return 操作结果
+     */
     private String deleteObjects(DeleteObjectsRequest deleteObjectsRequest) {
         String msg = "OK";
         try {
@@ -493,6 +503,27 @@ public class S3 {
             System.err.println("Failure!");
         }
         return msg;
+    }
+
+    /**
+     * <p>
+     * 获取桶的 acl
+     * </p>
+     *
+     * @param bucketName 桶名称
+     * @return 访问授权列表
+     */
+    public List<Grant> getBucketAcl(String bucketName) {
+        List<Grant> grants = null;
+        try {
+            System.out.printf("Retrieving ACL for bucket [%s]\n", bucketName);
+            AccessControlList acl = s3.getBucketAcl(bucketName);
+            grants = acl.getGrantsAsList();
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+            System.err.println("Failure!");
+        }
+        return grants;
     }
 
 }

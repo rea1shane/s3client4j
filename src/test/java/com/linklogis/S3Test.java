@@ -1,6 +1,8 @@
 package com.linklogis;
 
+import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.Grant;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
@@ -181,6 +183,20 @@ public class S3Test {
     @Test
     public void testMoveObject() {
         System.out.println(s3Instance.moveObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
+    }
+
+    /**
+     * <p>
+     * {@link S3#getBucketAcl(String)}
+     * </p>
+     */
+    @Test
+    public void testGetBucketAcl() {
+        List<Grant> grants = s3Instance.getBucketAcl(sourceBucketName);
+        for (Grant grant : grants) {
+            System.out.format(" * [%s]: %s\n", grant.getGrantee().getIdentifier(),
+                    grant.getPermission().toString());
+        }
     }
 
 }
