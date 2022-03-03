@@ -1,8 +1,6 @@
 package com.linklogis;
 
-import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.Grant;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
@@ -183,36 +181,6 @@ public class S3Test {
     @Test
     public void testMoveObject() {
         System.out.println(s3Instance.moveObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
-    }
-
-    /**
-     * <p>
-     * {@link S3#getBucketAcl(String)}
-     * </p>
-     */
-    @Test
-    public void testGetBucketAcl() {
-        AccessControlList acl = s3Instance.getBucketAcl(sourceBucketName);
-        List<Grant> grants = acl.getGrantsAsList();
-        for (Grant grant : grants) {
-            System.out.format(" * [%s]: %s\n", grant.getGrantee().getIdentifier(),
-                    grant.getPermission().toString());
-        }
-    }
-
-    /**
-     * <p>
-     * {@link S3#getObjectAcl(String, String)}
-     * </p>
-     */
-    @Test
-    public void testGetObjectAcl() {
-        AccessControlList acl = s3Instance.getObjectAcl(sourceBucketName, sourceKey);
-        List<Grant> grants = acl.getGrantsAsList();
-        for (Grant grant : grants) {
-            System.out.format(" * [%s]: %s\n", grant.getGrantee().getIdentifier(),
-                    grant.getPermission().toString());
-        }
     }
 
 }

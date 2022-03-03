@@ -3,7 +3,6 @@ package com.linklogis;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
@@ -502,47 +501,6 @@ public class S3 {
             System.err.println("Failure!");
         }
         return msg;
-    }
-
-    /**
-     * <p>
-     * 获取桶的 acl
-     * </p>
-     *
-     * @param bucketName 桶名称
-     * @return 访问授权列表
-     */
-    public AccessControlList getBucketAcl(String bucketName) {
-        AccessControlList acl = null;
-        try {
-            System.out.printf("Retrieving ACL for bucket [%s]:\n", bucketName);
-            acl = this.s3.getBucketAcl(bucketName);
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-            System.err.println("Failure!");
-        }
-        return acl;
-    }
-
-    /**
-     * <p>
-     * 获取桶的 acl
-     * </p>
-     *
-     * @param bucketName 桶名称
-     * @param key        对象的键
-     * @return 访问授权列表
-     */
-    public AccessControlList getObjectAcl(String bucketName, String key) {
-        AccessControlList acl = null;
-        try {
-            System.out.printf("Retrieving ACL for object [%s] in bucket [%s]: \n", key, bucketName);
-            acl = this.s3.getObjectAcl(bucketName, key);
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-            System.err.println("Failure!");
-        }
-        return acl;
     }
 
 }
