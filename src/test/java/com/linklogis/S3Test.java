@@ -5,6 +5,8 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -181,6 +183,23 @@ public class S3Test {
     @Test
     public void testMoveObject() {
         System.out.println(s3Instance.moveObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
+    }
+
+    /**
+     * <p>
+     * {@link S3#uploadFile(String, String, InputStream, ObjectMetadata)}
+     * </p>
+     */
+    @Test
+    public void testUploadFile() throws IOException {
+        InputStream input = new FileInputStream(desktopFilePath);
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("method", "transfer_manager");
+        objectMetadata.setUserMetadata(metadata);
+        Upload upload = s3Instance.uploadFile(sourceBucketName, sourceKey, input, objectMetadata);
+        TransferManagerProgress.waitForCompletion(upload);
+        input.close();
     }
 
 }

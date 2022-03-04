@@ -17,6 +17,9 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.Upload;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +31,8 @@ import java.util.Map;
 // TODO 操作添加审计，每一次操作都会生成 id，子操作 id 与父操作 id 关联
 public class S3 {
 
-    private final AmazonS3 s3;
+    private AmazonS3 s3;
+    private TransferManager transferManager;
 
     /**
      * <p>
@@ -36,7 +40,8 @@ public class S3 {
      * </p>
      */
     public S3() {
-        this.s3 = AmazonS3ClientBuilder.standard().build();
+        setS3(null);
+        setTransferManager(null);
     }
 
     /**
@@ -46,8 +51,17 @@ public class S3 {
      *
      * @param s3 自定义 s3 client
      */
-    public S3(AmazonS3 s3) {
-        this.s3 = s3;
+    public S3(AmazonS3 s3, TransferManager transferManager) {
+        setS3(s3);
+        setTransferManager(transferManager);
+    }
+
+    private void setS3(AmazonS3 s3) {
+        this.s3 = s3 == null ? AmazonS3ClientBuilder.standard().build() : s3;
+    }
+
+    private void setTransferManager(TransferManager transferManager) {
+        this.transferManager = transferManager == null ? TransferManagerBuilder.standard().build() : transferManager;
     }
 
     /**
@@ -211,14 +225,14 @@ public class S3 {
      * 上传文件
      * </p>
      *
-     * @param bucketName 桶的名称
-     * @param key        对象的键
-     * @param input      文件流
-     * @param metadata   元数据
+     * @param bucketName  桶的名称
+     * @param key         对象的键
+     * @param inputStream 文件流
+     * @param metadata    元数据
      * @return 操作结果
      */
-    public String putObject(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
-        return putObject(new PutObjectRequest(bucketName, key, input, metadata));
+    public String putObject(String bucketName, String key, InputStream inputStream, ObjectMetadata metadata) {
+        return putObject(new PutObjectRequest(bucketName, key, inputStream, metadata));
     }
 
     /**
@@ -501,6 +515,39 @@ public class S3 {
             System.err.println("Failure!");
         }
         return msg;
+    }
+
+    /**
+     * <p>
+     * 通过 TransferManager 上传文件
+     * </p>
+     *
+     * @param bucketName  桶的名称
+     * @param key         对象的键
+     * @param inputStream 文件流
+     * @param metadata    元数据
+     * @return upload 对象
+     */
+    public Upload uploadFile(String bucketName, String key, InputStream inputStream, ObjectMetadata metadata) {
+        return upload(new PutObjectRequest(bucketName, key, inputStream, metadata));
+    }
+
+    /**
+     * <p>
+     * 通过 TransferManager 上传对象
+     * </p>
+     *
+     * @param putObjectRequest 请求对象，包含上传对象的所有选项
+     * @return upload 对象
+     */
+    private Upload upload(PutObjectRequest putObjectRequest) {
+        Upload uploadObject = null;
+        try {
+            uploadObject = this.transferManager.upload(putObjectRequest);
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+        }
+        return uploadObject;
     }
 
 }
