@@ -1,4 +1,4 @@
-package com.linklogis;
+package io.shane;
 
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;

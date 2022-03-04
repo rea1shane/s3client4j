@@ -1,4 +1,4 @@
-package com.linklogis;
+package io.shane;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
