@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import org.junit.Test;
 
@@ -198,7 +197,8 @@ public class S3Test {
         metadata.put("method", "transfer_manager");
         objectMetadata.setUserMetadata(metadata);
         Upload upload = s3Instance.uploadFile(sourceBucketName, sourceKey, input, objectMetadata);
-        TransferManagerProgress.waitForCompletion(upload);
+//        System.out.println(TransferManagerProgress.waitForCompletion(upload));;
+        TransferManagerProgress.showTransferProgress(upload);
         input.close();
     }
 

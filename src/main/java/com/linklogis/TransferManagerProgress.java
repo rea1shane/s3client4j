@@ -12,69 +12,77 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class TransferManagerProgress {
-    // waits for the transfer to complete, catching any exceptions that occur.
-    public static void waitForCompletion(Transfer xfer) {
-        // snippet-start:[s3.java1.s3_xfer_mgr_progress.wait_for_transfer]
+
+    /**
+     * <p>
+     * 等待 Transfer 完成，捕获发生的任何异常
+     * </p>
+     *
+     * @param transfer 异步上传或者下载对象
+     * @return 传输结果
+     */
+    public static String waitForCompletion(Transfer transfer) {
+        String msg = "OK";
         try {
-            xfer.waitForCompletion();
+            transfer.waitForCompletion();
         } catch (AmazonServiceException e) {
-            System.err.println("Amazon service error: " + e.getMessage());
-            System.exit(1);
+            msg = "Amazon service error: " + e.getErrorMessage();
         } catch (AmazonClientException e) {
-            System.err.println("Amazon client error: " + e.getMessage());
-            System.exit(1);
+            msg = "Amazon client error: " + e.getMessage();
         } catch (InterruptedException e) {
-            System.err.println("Transfer interrupted: " + e.getMessage());
-            System.exit(1);
+            msg = "Transfer interrupted: " + e.getMessage();
         }
-        // snippet-end:[s3.java1.s3_xfer_mgr_progress.wait_for_transfer]
+        return msg;
     }
 
-    // Prints progress while waiting for the transfer to finish.
-    public static void showTransferProgress(Transfer xfer) {
-        // snippet-start:[s3.java1.s3_xfer_mgr_progress.poll]
-        // print the transfer's human-readable description
-        System.out.println(xfer.getDescription());
-        // print an empty progress bar...
+
+    /**
+     * <p>
+     * 在等待传输完成时打印进度条
+     * </p>
+     *
+     * @param transfer 异步上传或者下载对象
+     */
+    public static void showTransferProgress(Transfer transfer) {
+        // transfer 的描述
+        System.out.println(transfer.getDescription());
+        // 打印空进度条
         printProgressBar(0.0);
-        // update the progress bar while the xfer is ongoing.
+        // 在传输进行时更新进度条
         do {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 return;
             }
-            // Note: so_far and total aren't used, they're just for
-            // documentation purposes.
-            TransferProgress progress = xfer.getProgress();
-            long so_far = progress.getBytesTransferred();
-            long total = progress.getTotalBytesToTransfer();
-            double pct = progress.getPercentTransferred();
+            // Note: bytesTransferred and totalBytesToTransfer aren't used, they're just for documentation purposes.
+            TransferProgress progress = transfer.getProgress();
+            long bytesTransferred = progress.getBytesTransferred();
+            long totalBytesToTransfer = progress.getTotalBytesToTransfer();
+            double percentTransferred = progress.getPercentTransferred();
             eraseProgressBar();
-            printProgressBar(pct);
-        } while (xfer.isDone() == false);
-        // print the final state of the transfer.
-        TransferState xfer_state = xfer.getState();
-        System.out.println(": " + xfer_state);
-        // snippet-end:[s3.java1.s3_xfer_mgr_progress.poll]
+            printProgressBar(percentTransferred);
+        } while (transfer.isDone() == false);
+        // transfer 的最终状态
+        TransferState transferState = transfer.getState();
+        System.out.println(": " + transferState);
     }
 
     // Prints progress of a multiple file upload while waiting for it to finish.
-    public static void showMultiUploadProgress(MultipleFileUpload multi_upload) {
+    public static void showMultiUploadProgress(MultipleFileUpload multipleFileUpload) {
         // print the upload's human-readable description
-        System.out.println(multi_upload.getDescription());
+        System.out.println(multipleFileUpload.getDescription());
 
-        // snippet-start:[s3.java1.s3_xfer_mgr_progress.substranferes]
-        Collection<? extends Upload> sub_xfers = new ArrayList<Upload>();
-        sub_xfers = multi_upload.getSubTransfers();
+        Collection<? extends Upload> subTransfers = new ArrayList<Upload>();
+        subTransfers = multipleFileUpload.getSubTransfers();
 
         do {
             System.out.println("\nSubtransfer progress:\n");
-            for (Upload u : sub_xfers) {
+            for (Upload u : subTransfers) {
                 System.out.println("  " + u.getDescription());
                 if (u.isDone()) {
-                    TransferState xfer_state = u.getState();
-                    System.out.println("  " + xfer_state);
+                    TransferState transferState = u.getState();
+                    System.out.println("  " + transferState);
                 } else {
                     TransferProgress progress = u.getProgress();
                     double pct = progress.getPercentTransferred();
@@ -89,11 +97,10 @@ public class TransferManagerProgress {
             } catch (InterruptedException e) {
                 return;
             }
-        } while (multi_upload.isDone() == false);
+        } while (multipleFileUpload.isDone() == false);
         // print the final state of the transfer.
-        TransferState xfer_state = multi_upload.getState();
-        System.out.println("\nMultipleFileUpload " + xfer_state);
-        // snippet-end:[s3.java1.s3_xfer_mgr_progress.substranferes]
+        TransferState transferState = multipleFileUpload.getState();
+        System.out.println("\nMultipleFileUpload " + transferState);
     }
 
     // prints a simple text progressbar: [#####     ]
@@ -127,11 +134,10 @@ public class TransferManagerProgress {
             key_name = file_path;
         }
 
-        // snippet-start:[s3.java1.s3_xfer_mgr_progress.progress_listener]
         File f = new File(file_path);
-        TransferManager xfer_mgr = TransferManagerBuilder.standard().build();
+        TransferManager transferManager = TransferManagerBuilder.standard().build();
         try {
-            Upload u = xfer_mgr.upload(bucket_name, key_name, f);
+            Upload u = transferManager.upload(bucket_name, key_name, f);
             // print an empty progress bar...
             printProgressBar(0.0);
             u.addProgressListener(new ProgressListener() {
@@ -144,100 +150,34 @@ public class TransferManagerProgress {
             // block with Transfer.waitForCompletion()
             TransferManagerProgress.waitForCompletion(u);
             // print the final state of the transfer.
-            TransferState xfer_state = u.getState();
-            System.out.println(": " + xfer_state);
+            TransferState transferState = u.getState();
+            System.out.println(": " + transferState);
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
             System.exit(1);
         }
-        xfer_mgr.shutdownNow();
-        // snippet-end:[s3.java1.s3_xfer_mgr_progress.progress_listener]
+        transferManager.shutdownNow();
     }
 
-    public static void uploadDirWithSubprogress(String dir_path,
+    public static void uploadDirWithSubProgress(String dir_path,
                                                 String bucket_name, String key_prefix, boolean recursive,
                                                 boolean pause) {
         System.out.println("directory: " + dir_path + (recursive ?
                 " (recursive)" : "") + (pause ? " (pause)" : ""));
 
-        TransferManager xfer_mgr = new TransferManager();
+        TransferManager transferManager = new TransferManager();
         try {
-            MultipleFileUpload multi_upload = xfer_mgr.uploadDirectory(
+            MultipleFileUpload multipleFileUpload = transferManager.uploadDirectory(
                     bucket_name, key_prefix, new File(dir_path), recursive);
             // loop with Transfer.isDone()
-            TransferManagerProgress.showMultiUploadProgress(multi_upload);
+            TransferManagerProgress.showMultiUploadProgress(multipleFileUpload);
             // or block with Transfer.waitForCompletion()
-            TransferManagerProgress.waitForCompletion(multi_upload);
+            TransferManagerProgress.waitForCompletion(multipleFileUpload);
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
             System.exit(1);
         }
-        xfer_mgr.shutdownNow();
+        transferManager.shutdownNow();
     }
 
-    public static void main(String[] args) {
-        final String USAGE = "\n" +
-                "Usage:\n" +
-                "    TransferManagerProgress [--recursive] [--pause] <s3_path> <local_path>\n\n" +
-                "Where:\n" +
-                "    --recursive - Only applied if local_path is a directory.\n" +
-                "                  Copies the contents of the directory recursively.\n\n" +
-                "    --pause     - Attempt to pause+resume the upload. This may not work for\n" +
-                "                  small files.\n\n" +
-                "    s3_path     - The S3 destination (bucket/path) to upload the file(s) to.\n\n" +
-                "    local_path  - The path to a local file or directory path to upload to S3.\n\n" +
-                "Examples:\n" +
-                "    TransferManagerProgress public_photos/cat_happy.png my_photos/funny_cat.png\n" +
-                "    TransferManagerProgress public_photos my_photos/cat_sad.png\n" +
-                "    TransferManagerProgress public_photos my_photos\n\n";
-
-        if (args.length < 2) {
-            System.out.println(USAGE);
-            System.exit(1);
-        }
-
-        int cur_arg = 0;
-        boolean recursive = false;
-        boolean pause = false;
-
-        // first, parse any switches
-        while (args[cur_arg].startsWith("--")) {
-            if (args[cur_arg].equals("--recursive")) {
-                recursive = true;
-            } else if (args[cur_arg].equals("--pause")) {
-                pause = true;
-            } else {
-                System.out.println("Unknown argument: " + args[cur_arg]);
-                System.out.println(USAGE);
-                System.exit(1);
-            }
-            cur_arg += 1;
-        }
-
-        // only the first '/' character is of interest to get the bucket name.
-        // Subsequent ones are part of the key name.
-        String[] s3_path = args[cur_arg].split("/", 2);
-        cur_arg += 1;
-
-        String bucket_name = s3_path[0];
-        String key_prefix = null;
-        if (s3_path.length > 1) {
-            key_prefix = s3_path[1];
-        }
-
-        String local_path = args[cur_arg];
-
-        // check to see if local path is a directory or file...
-        File f = new File(args[cur_arg]);
-        if (f.exists() == false) {
-            System.out.println("Input path doesn't exist: " + args[cur_arg]);
-            System.exit(1);
-        } else if (f.isDirectory()) {
-            uploadDirWithSubprogress(local_path, bucket_name, key_prefix,
-                    recursive, pause);
-        } else {
-            uploadFileWithListener(local_path, bucket_name, key_prefix, pause);
-        }
-    }
 }
-// snippet-end:[s3.java1.s3_xfer_mgr_progress.complete]
