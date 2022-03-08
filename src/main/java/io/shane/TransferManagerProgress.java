@@ -4,8 +4,13 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
-import com.amazonaws.services.s3.transfer.*;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
+import com.amazonaws.services.s3.transfer.Transfer;
 import com.amazonaws.services.s3.transfer.Transfer.TransferState;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.TransferProgress;
+import com.amazonaws.services.s3.transfer.Upload;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -115,9 +120,8 @@ public class TransferManagerProgress {
 
     // prints a simple text progressbar: [#####     ]
     public static void printProgressBar(double percent) {
-        System.out.println(percent);
-        final String emptyBar = "                                        ";
-        final String filledBar = "########################################";
+        final String emptyBar = new String(new char[BAR_SIZE]).replace('\0', ' ');
+        final String filledBar = new String(new char[BAR_SIZE]).replace('\0', '#');
         int automaticFull = (int) (BAR_SIZE * (percent / 100.0));
         System.out.format("  [%s%s]", filledBar.substring(0, automaticFull), emptyBar.substring(0, BAR_SIZE - automaticFull));
     }

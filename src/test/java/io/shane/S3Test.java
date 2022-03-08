@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.Upload;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -192,15 +193,31 @@ public class S3Test {
      * </p>
      */
     @Test
-    public void testUploadFile() throws IOException {
+    public void testUploadFileWithStream() throws IOException {
         InputStream input = new FileInputStream(picFilePath);
         ObjectMetadata objectMetadata = new ObjectMetadata();
         Map<String, String> metadata = new HashMap<>();
-        metadata.put("method", "transfer_manager");
+        metadata.put("method", "transfer_manager_with_stream");
         objectMetadata.setUserMetadata(metadata);
         Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, input, objectMetadata);
         System.out.println(TransferManagerProgress.waitForCompletion(upload));
         input.close();
+    }
+
+    /**
+     * <p>
+     * {@link S3#uploadFile(String, String, File, ObjectMetadata)}
+     * </p>
+     */
+    @Test
+    public void testUploadFileWithFile() {
+        File file = new File(picFilePath);
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("method", "transfer_manager_with_file");
+        objectMetadata.setUserMetadata(metadata);
+        Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, file, objectMetadata);
+        TransferManagerProgress.showTransferProgress(upload);
     }
 
 }

@@ -21,6 +21,7 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -519,7 +520,7 @@ public class S3 {
 
     /**
      * <p>
-     * 通过 TransferManager 上传文件
+     * 使用 InputStream，通过 TransferManager 上传文件
      * </p>
      *
      * @param bucketName  桶的名称
@@ -530,6 +531,21 @@ public class S3 {
      */
     public Upload uploadFile(String bucketName, String key, InputStream inputStream, ObjectMetadata metadata) {
         return upload(new PutObjectRequest(bucketName, key, inputStream, metadata));
+    }
+
+    /**
+     * <p>
+     * 使用 File，通过 TransferManager 上传文件
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param key        对象的键
+     * @param file       文件
+     * @param metadata   元数据
+     * @return upload 对象
+     */
+    public Upload uploadFile(String bucketName, String key, File file, ObjectMetadata metadata) {
+        return upload(new PutObjectRequest(bucketName, key, file).withMetadata(metadata));
     }
 
     /**
