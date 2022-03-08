@@ -30,6 +30,8 @@ public class S3Test {
     String destinationKey = "copy_test.json";
     String prefix = "test";
     String[] keys = {"delete1.json", "delete2.json", "delete3.json"};
+    String picFilePath = "/Users/shane/Desktop/DSCF4585.RAF";
+    String picKey = "DSCF4585.RAF";
 
     /**
      * <p>
@@ -161,7 +163,7 @@ public class S3Test {
      */
     @Test
     public void testDeleteObject() {
-        System.out.println(s3Instance.deleteObject(destinationBucketName, destinationKey));
+        System.out.println(s3Instance.deleteObject(sourceBucketName, sourceKey));
     }
 
     /**
@@ -191,14 +193,13 @@ public class S3Test {
      */
     @Test
     public void testUploadFile() throws IOException {
-        InputStream input = new FileInputStream(desktopFilePath);
+        InputStream input = new FileInputStream(picFilePath);
         ObjectMetadata objectMetadata = new ObjectMetadata();
         Map<String, String> metadata = new HashMap<>();
         metadata.put("method", "transfer_manager");
         objectMetadata.setUserMetadata(metadata);
-        Upload upload = s3Instance.uploadFile(sourceBucketName, sourceKey, input, objectMetadata);
-//        System.out.println(TransferManagerProgress.waitForCompletion(upload));;
-        TransferManagerProgress.showTransferProgress(upload);
+        Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, input, objectMetadata);
+        System.out.println(TransferManagerProgress.waitForCompletion(upload));
         input.close();
     }
 

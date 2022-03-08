@@ -13,6 +13,20 @@ import java.util.Collection;
 
 public class TransferManagerProgress {
 
+    private static final int BAR_SIZE = 40;
+
+    /**
+     * <p>
+     * 获取传输进度
+     * </p>
+     *
+     * @param transfer 异步上传或者下载对象
+     * @return 传输百分比，传输完成的话返回 -1.0
+     */
+    public static double getPercentTransferred(Transfer transfer) {
+        return transfer.getProgress().getPercentTransferred();
+    }
+
     /**
      * <p>
      * 等待 Transfer 完成，捕获发生的任何异常
@@ -55,11 +69,7 @@ public class TransferManagerProgress {
             } catch (InterruptedException e) {
                 return;
             }
-            // Note: bytesTransferred and totalBytesToTransfer aren't used, they're just for documentation purposes.
-            TransferProgress progress = transfer.getProgress();
-            long bytesTransferred = progress.getBytesTransferred();
-            long totalBytesToTransfer = progress.getTotalBytesToTransfer();
-            double percentTransferred = progress.getPercentTransferred();
+            double percentTransferred = getPercentTransferred(transfer);
             eraseProgressBar();
             printProgressBar(percentTransferred);
         } while (transfer.isDone() == false);
@@ -104,22 +114,19 @@ public class TransferManagerProgress {
     }
 
     // prints a simple text progressbar: [#####     ]
-    public static void printProgressBar(double pct) {
-        // if bar_size changes, then change erase_bar (in eraseProgressBar) to
-        // match.
-        final int bar_size = 40;
-        final String empty_bar = "                                        ";
-        final String filled_bar = "########################################";
-        int amt_full = (int) (bar_size * (pct / 100.0));
-        System.out.format("  [%s%s]", filled_bar.substring(0, amt_full),
-                empty_bar.substring(0, bar_size - amt_full));
+    public static void printProgressBar(double percent) {
+        System.out.println(percent);
+        final String emptyBar = "                                        ";
+        final String filledBar = "########################################";
+        int automaticFull = (int) (BAR_SIZE * (percent / 100.0));
+        System.out.format("  [%s%s]", filledBar.substring(0, automaticFull), emptyBar.substring(0, BAR_SIZE - automaticFull));
     }
 
     // erases the progress bar.
     public static void eraseProgressBar() {
-        // erase_bar is bar_size (from printProgressBar) + 4 chars.
-        final String erase_bar = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
-        System.out.format(erase_bar);
+        // eraseBar is BAR_SIZE + 4 chars.
+        final String eraseBar = new String(new char[BAR_SIZE + 4]).replace('\0', '\b');
+        System.out.format(eraseBar);
     }
 
     public static void uploadFileWithListener(String file_path,
