@@ -10,7 +10,7 @@ import com.amazonaws.services.s3.model.Tag;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.Upload;
 import io.shane.provider.CustomObjectMetadataProvider;
-import io.shane.provider.CustomObjectTaggingProvider;
+import io.shane.provider.CustomObjectTagsProvider;
 import org.junit.Test;
 
 import java.io.File;
@@ -251,7 +251,7 @@ public class S3Test {
 
     /**
      * <p>
-     * {@link S3#uploadFileList(String, String, File, List, CustomObjectMetadataProvider, CustomObjectTaggingProvider)}
+     * {@link S3#uploadFileList(String, String, File, List, CustomObjectMetadataProvider, CustomObjectTagsProvider)}
      * </p>
      */
     @Test
@@ -259,7 +259,40 @@ public class S3Test {
         File d = new File(dir);
         List<File> files = new ArrayList<>();
         listFiles(d, files, true);
-        MultipleFileUpload multipleFileUpload = s3Instance.uploadFileList(sourceBucketName, "dir_test", d, files, null, null);
+
+        HashMap<File, Map<String, String>> fileMetadataMap = new HashMap<>();
+        Map<File, List<Tag>> fileTagsMap = new HashMap<>();
+
+        File metainfo = new File("/Users/shane/Desktop/AMBARI/PROMETHEUS/metainfo.xml");
+
+        Map<String, String> metainfoMetadata = new HashMap<>();
+        metainfoMetadata.put("file_name", "metainfo.xml");
+        fileMetadataMap.put(metainfo, metainfoMetadata);
+
+        ArrayList<Tag> metainfoTags = new ArrayList<>();
+        Tag metainfoTag1 = new Tag("no", "1");
+        Tag metainfoTag2 = new Tag("method", "multiple");
+        metainfoTags.add(metainfoTag1);
+        metainfoTags.add(metainfoTag2);
+        fileTagsMap.put(metainfo, metainfoTags);
+
+        File quicklinks = new File("/Users/shane/Desktop/AMBARI/PROMETHEUS/quicklinks/quicklinks.json");
+
+        Map<String, String> quicklinksMetadata = new HashMap<>();
+        quicklinksMetadata.put("file_name", "quicklinks.json");
+        fileMetadataMap.put(quicklinks, quicklinksMetadata);
+
+        ArrayList<Tag> quicklinksTags = new ArrayList<>();
+        Tag quicklinksTag1 = new Tag("no", "2");
+        Tag quicklinksTag2 = new Tag("method", "multiple");
+        quicklinksTags.add(quicklinksTag1);
+        quicklinksTags.add(quicklinksTag2);
+        fileTagsMap.put(quicklinks, quicklinksTags);
+
+        CustomObjectMetadataProvider customObjectMetadataProvider = new CustomObjectMetadataProvider(fileMetadataMap);
+        CustomObjectTagsProvider customObjectTagsProvider = new CustomObjectTagsProvider(fileTagsMap);
+
+        MultipleFileUpload multipleFileUpload = s3Instance.uploadFileList(sourceBucketName, "dir_test", d, files, customObjectMetadataProvider, customObjectTagsProvider);
         TransferManagerProgress.showTransferProgress(multipleFileUpload);
     }
 

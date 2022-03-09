@@ -23,7 +23,7 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
 import io.shane.provider.CustomObjectMetadataProvider;
-import io.shane.provider.CustomObjectTaggingProvider;
+import io.shane.provider.CustomObjectTagsProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -531,11 +531,11 @@ public class S3 {
      * @param key         对象的键
      * @param inputStream 文件流
      * @param metadata    元数据
-     * @param tag         标签
+     * @param tags        标签
      * @return upload 对象
      */
-    public Upload uploadFile(String bucketName, String key, InputStream inputStream, ObjectMetadata metadata, ObjectTagging tag) {
-        return upload(new PutObjectRequest(bucketName, key, inputStream, metadata).withTagging(tag));
+    public Upload uploadFile(String bucketName, String key, InputStream inputStream, ObjectMetadata metadata, ObjectTagging tags) {
+        return upload(new PutObjectRequest(bucketName, key, inputStream, metadata).withTagging(tags));
     }
 
     /**
@@ -547,11 +547,11 @@ public class S3 {
      * @param key        对象的键
      * @param file       文件
      * @param metadata   元数据
-     * @param tag        标签
+     * @param tags       标签
      * @return upload 对象
      */
-    public Upload uploadFile(String bucketName, String key, File file, ObjectMetadata metadata, ObjectTagging tag) {
-        return upload(new PutObjectRequest(bucketName, key, file).withMetadata(metadata).withTagging(tag));
+    public Upload uploadFile(String bucketName, String key, File file, ObjectMetadata metadata, ObjectTagging tags) {
+        return upload(new PutObjectRequest(bucketName, key, file).withMetadata(metadata).withTagging(tags));
     }
 
     /**
@@ -582,11 +582,11 @@ public class S3 {
      * @param directory        文件的路径文件的路径
      * @param files            文件列表
      * @param metadataProvider 用于赋予不同文件元数据
-     * @param tagProvider      用于赋予不同文件标签
+     * @param tagsProvider     用于赋予不同文件标签
      * @return 多文件上传 upload 对象
      */
-    public MultipleFileUpload uploadFileList(String bucketName, String prefix, File directory, List<File> files, CustomObjectMetadataProvider metadataProvider, CustomObjectTaggingProvider tagProvider) {
-        return this.transferManager.uploadFileList(bucketName, prefix, directory, files, metadataProvider, tagProvider);
+    public MultipleFileUpload uploadFileList(String bucketName, String prefix, File directory, List<File> files, CustomObjectMetadataProvider metadataProvider, CustomObjectTagsProvider tagsProvider) {
+        return this.transferManager.uploadFileList(bucketName, prefix, directory, files, metadataProvider, tagsProvider);
     }
 
 }
