@@ -585,8 +585,8 @@ public class S3 {
      * @param tagProvider      用于赋予不同文件标签
      * @return 多文件上传 upload 对象
      */
-    public MultipleFileUpload uploadFileList(String bucketName, String prefix, String directory, List<File> files, CustomObjectMetadataProvider metadataProvider, CustomObjectTaggingProvider tagProvider) {
-        return this.transferManager.uploadFileList(bucketName, prefix, new File(directory), files, metadataProvider, tagProvider);
+    public MultipleFileUpload uploadFileList(String bucketName, String prefix, File directory, List<File> files, CustomObjectMetadataProvider metadataProvider, CustomObjectTaggingProvider tagProvider) {
+        return this.transferManager.uploadFileList(bucketName, prefix, directory, files, metadataProvider, tagProvider);
     }
 
 }

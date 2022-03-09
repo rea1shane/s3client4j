@@ -7,7 +7,10 @@ import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.Tag;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.Upload;
+import io.shane.provider.CustomObjectMetadataProvider;
+import io.shane.provider.CustomObjectTaggingProvider;
 import org.junit.Test;
 
 import java.io.File;
@@ -36,6 +39,7 @@ public class S3Test {
     String[] keys = {"delete1.json", "delete2.json", "delete3.json"};
     String picFilePath = "/Users/shane/Desktop/DSCF4585.RAF";
     String picKey = "DSCF4585.RAF";
+    String dir = "/Users/shane/Desktop/AMBARI";
 
     /**
      * <p>
@@ -243,6 +247,20 @@ public class S3Test {
 
         Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, file, objectMetadata, objectTagging);
         TransferManagerProgress.showTransferProgress(upload);
+    }
+
+    /**
+     * <p>
+     * {@link S3#uploadFileList(String, String, File, List, CustomObjectMetadataProvider, CustomObjectTaggingProvider)}
+     * </p>
+     */
+    @Test
+    public void testUploadFileList() {
+        File d = new File(dir);
+        List<File> files = new ArrayList<>();
+        listFiles(d, files, true);
+        MultipleFileUpload multipleFileUpload = s3Instance.uploadFileList(sourceBucketName, "dir_test", d, files, null, null);
+        TransferManagerProgress.showTransferProgress(multipleFileUpload);
     }
 
     /**
