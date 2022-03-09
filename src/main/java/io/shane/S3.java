@@ -11,15 +11,19 @@ import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
+import io.shane.provider.CustomObjectMetadataProvider;
+import io.shane.provider.CustomObjectTaggingProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -527,10 +531,11 @@ public class S3 {
      * @param key         对象的键
      * @param inputStream 文件流
      * @param metadata    元数据
+     * @param tag         标签
      * @return upload 对象
      */
-    public Upload uploadFile(String bucketName, String key, InputStream inputStream, ObjectMetadata metadata) {
-        return upload(new PutObjectRequest(bucketName, key, inputStream, metadata));
+    public Upload uploadFile(String bucketName, String key, InputStream inputStream, ObjectMetadata metadata, ObjectTagging tag) {
+        return upload(new PutObjectRequest(bucketName, key, inputStream, metadata).withTagging(tag));
     }
 
     /**
@@ -542,10 +547,11 @@ public class S3 {
      * @param key        对象的键
      * @param file       文件
      * @param metadata   元数据
+     * @param tag        标签
      * @return upload 对象
      */
-    public Upload uploadFile(String bucketName, String key, File file, ObjectMetadata metadata) {
-        return upload(new PutObjectRequest(bucketName, key, file).withMetadata(metadata));
+    public Upload uploadFile(String bucketName, String key, File file, ObjectMetadata metadata, ObjectTagging tag) {
+        return upload(new PutObjectRequest(bucketName, key, file).withMetadata(metadata).withTagging(tag));
     }
 
     /**
@@ -564,6 +570,23 @@ public class S3 {
             System.err.println(e.getErrorMessage());
         }
         return uploadObject;
+    }
+
+    /**
+     * <p>
+     * 使用 List<File>，通过 TransferManager 上传多个文件
+     * </p>
+     *
+     * @param bucketName       桶的名称
+     * @param prefix           上传路径
+     * @param directory        文件的路径文件的路径
+     * @param files            文件列表
+     * @param metadataProvider 用于赋予不同文件元数据
+     * @param tagProvider      用于赋予不同文件标签
+     * @return 多文件上传 upload 对象
+     */
+    public MultipleFileUpload uploadFileList(String bucketName, String prefix, String directory, List<File> files, CustomObjectMetadataProvider metadataProvider, CustomObjectTaggingProvider tagProvider) {
+        return this.transferManager.uploadFileList(bucketName, prefix, new File(directory), files, metadataProvider, tagProvider);
     }
 
 }

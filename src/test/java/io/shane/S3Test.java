@@ -3,8 +3,10 @@ package io.shane;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.Tag;
 import com.amazonaws.services.s3.transfer.Upload;
 import org.junit.Test;
 
@@ -15,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -189,35 +192,78 @@ public class S3Test {
 
     /**
      * <p>
-     * {@link S3#uploadFile(String, String, InputStream, ObjectMetadata)}
+     * {@link S3#uploadFile(String, String, InputStream, ObjectMetadata, ObjectTagging)}
      * </p>
      */
     @Test
     public void testUploadFileWithStream() throws IOException {
         InputStream input = new FileInputStream(picFilePath);
+
         ObjectMetadata objectMetadata = new ObjectMetadata();
         Map<String, String> metadata = new HashMap<>();
         metadata.put("method", "transfer_manager_with_stream");
         objectMetadata.setUserMetadata(metadata);
-        Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, input, objectMetadata);
+
+        ArrayList<Tag> tags = new ArrayList<>();
+        Tag tag1 = new Tag("from", "mac");
+        Tag tag2 = new Tag("auth", "shane");
+        Tag tag3 = new Tag("method", "transfer_manager_with_stream");
+        tags.add(tag1);
+        tags.add(tag2);
+        tags.add(tag3);
+        ObjectTagging objectTagging = new ObjectTagging(tags);
+
+        Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, input, objectMetadata, objectTagging);
         System.out.println(TransferManagerProgress.waitForCompletion(upload));
         input.close();
     }
 
     /**
      * <p>
-     * {@link S3#uploadFile(String, String, File, ObjectMetadata)}
+     * {@link S3#uploadFile(String, String, File, ObjectMetadata, ObjectTagging)}
      * </p>
      */
     @Test
     public void testUploadFileWithFile() {
         File file = new File(picFilePath);
+
         ObjectMetadata objectMetadata = new ObjectMetadata();
         Map<String, String> metadata = new HashMap<>();
         metadata.put("method", "transfer_manager_with_file");
         objectMetadata.setUserMetadata(metadata);
-        Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, file, objectMetadata);
+
+        ArrayList<Tag> tags = new ArrayList<>();
+        Tag tag1 = new Tag("from", "mac");
+        Tag tag2 = new Tag("auth", "shane");
+        Tag tag3 = new Tag("method", "transfer_manager_with_file");
+        tags.add(tag1);
+        tags.add(tag2);
+        tags.add(tag3);
+        ObjectTagging objectTagging = new ObjectTagging(tags);
+
+        Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, file, objectMetadata, objectTagging);
         TransferManagerProgress.showTransferProgress(upload);
+    }
+
+    /**
+     * <p>
+     * Lists files in the directory given and adds them to the result list
+     * passed in, optionally adding subdirectories recursively.
+     * </p>
+     */
+    private void listFiles(File dir, List<File> results, boolean includeSubDirectories) {
+        File[] found = dir.listFiles();
+        if (found != null) {
+            for (File f : found) {
+                if (f.isDirectory()) {
+                    if (includeSubDirectories) {
+                        listFiles(f, results, includeSubDirectories);
+                    }
+                } else {
+                    results.add(f);
+                }
+            }
+        }
     }
 
 }
