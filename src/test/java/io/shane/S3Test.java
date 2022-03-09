@@ -40,6 +40,8 @@ public class S3Test {
     String picFilePath = "/Users/shane/Desktop/DSCF4585.RAF";
     String picKey = "DSCF4585.RAF";
     String dir = "/Users/shane/Desktop/AMBARI";
+    String file1 = dir + "/PROMETHEUS/metainfo.xml";
+    String file2 = dir + "/PROMETHEUS/quicklinks/quicklinks.json";
 
     /**
      * <p>
@@ -263,7 +265,7 @@ public class S3Test {
         HashMap<File, Map<String, String>> fileMetadataMap = new HashMap<>();
         Map<File, List<Tag>> fileTagsMap = new HashMap<>();
 
-        File metainfo = new File("/Users/shane/Desktop/AMBARI/PROMETHEUS/metainfo.xml");
+        File metainfo = new File(file1);
 
         Map<String, String> metainfoMetadata = new HashMap<>();
         metainfoMetadata.put("file_name", "metainfo.xml");
@@ -276,7 +278,7 @@ public class S3Test {
         metainfoTags.add(metainfoTag2);
         fileTagsMap.put(metainfo, metainfoTags);
 
-        File quicklinks = new File("/Users/shane/Desktop/AMBARI/PROMETHEUS/quicklinks/quicklinks.json");
+        File quicklinks = new File(file2);
 
         Map<String, String> quicklinksMetadata = new HashMap<>();
         quicklinksMetadata.put("file_name", "quicklinks.json");
