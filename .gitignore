@@ -26,3 +26,6 @@ replay_pid*
 #ignore directories
 .idea
 target
+
+# macos
+.DS_Store
