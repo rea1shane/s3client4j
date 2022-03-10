@@ -590,25 +590,4 @@ public class S3 {
         return this.transferManager.uploadFileList(bucketName, prefix, directory, files, metadataProvider, tagsProvider);
     }
 
-    /**
-     * <p>
-     * 通过 TransferManager 下载 File
-     * </p>
-     *
-     * @param bucketName 桶的名称
-     * @param key        对象的键
-     * @param file       要下载到哪个文件
-     * @return download 对象
-     */
-    public Download downloadFile(String bucketName, String key, File file) {
-        Download download = null;
-        try {
-            System.out.println("Downloading to file: " + file.getAbsolutePath());
-            download = this.transferManager.download(bucketName, key, file);
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-        }
-        return download;
-    }
-
 }

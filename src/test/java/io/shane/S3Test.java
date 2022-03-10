@@ -301,17 +301,6 @@ public class S3Test {
 
     /**
      * <p>
-     * {@link S3#downloadFile(String, String, File)}
-     * </p>
-     */
-    @Test
-    public void testDownloadFile() {
-        Download download = s3Instance.downloadFile(sourceBucketName, sourceKey, new File(downloadsFilePath));
-        TransferManagerProgress.waitForCompletion(download);
-    }
-
-    /**
-     * <p>
      * Lists files in the directory given and adds them to the result list
      * passed in, optionally adding subdirectories recursively.
      * </p>
