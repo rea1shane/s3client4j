@@ -18,7 +18,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
-import com.amazonaws.services.s3.transfer.Download;
+import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
@@ -588,6 +588,39 @@ public class S3 {
      */
     public MultipleFileUpload uploadFileList(String bucketName, String prefix, File directory, List<File> files, CustomObjectMetadataProvider metadataProvider, CustomObjectTagsProvider tagsProvider) {
         return this.transferManager.uploadFileList(bucketName, prefix, directory, files, metadataProvider, tagsProvider);
+    }
+
+    /**
+     * <p>
+     * 通过 TransferManager 拷贝对象
+     * </p>
+     *
+     * @param sourceBucketName      源桶名称
+     * @param sourceKey             源对象键
+     * @param destinationBucketName 目标桶名称
+     * @param destinationKey        目标对象键
+     * @return copy 对象
+     */
+    public Copy copy(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey) {
+        return copy(new CopyObjectRequest(sourceBucketName, sourceKey, destinationBucketName, destinationKey));
+    }
+
+    /**
+     * <p>
+     * 通过 TransferManager 拷贝对象
+     * </p>
+     *
+     * @param copyObjectRequest 请求对象，包含拷贝对象的所有选项
+     * @return copy 对象
+     */
+    private Copy copy(CopyObjectRequest copyObjectRequest) {
+        Copy copy = null;
+        try {
+            copy = this.transferManager.copy(copyObjectRequest);
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+        }
+        return copy;
     }
 
 }

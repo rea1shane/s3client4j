@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.Tag;
+import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -297,6 +298,17 @@ public class S3Test {
 
         MultipleFileUpload multipleFileUpload = s3Instance.uploadFileList(sourceBucketName, "dir_test", d, files, customObjectMetadataProvider, customObjectTagsProvider);
         TransferManagerProgress.showTransferProgress(multipleFileUpload);
+    }
+
+    /**
+     * <p>
+     * {@link S3#copy(String, String, String, String)}
+     * </p>
+     */
+    @Test
+    public void testCopy() {
+        Copy copy = s3Instance.copy(sourceBucketName, sourceKey, destinationBucketName, destinationKey);
+        TransferManagerProgress.showTransferProgress(copy);
     }
 
     /**
