@@ -18,6 +18,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
@@ -334,11 +335,11 @@ public class S3 {
             outputStream.close();
             System.out.println("Done!");
         } catch (AmazonServiceException e) {
-            msg = e.getErrorMessage();
+            msg = "Amazon service error: " + e.getErrorMessage();
             System.err.println(msg);
             System.err.println("Failure!");
         } catch (IOException e) {
-            msg = e.getMessage();
+            msg = "IO error: " + e.getMessage();
             System.err.println(msg);
             System.err.println("Failure!");
         }
@@ -583,10 +584,31 @@ public class S3 {
      * @param files            文件列表
      * @param metadataProvider 用于赋予不同文件元数据
      * @param tagsProvider     用于赋予不同文件标签
-     * @return 多文件上传 upload 对象
+     * @return multipleFileUpload 对象
      */
     public MultipleFileUpload uploadFileList(String bucketName, String prefix, File directory, List<File> files, CustomObjectMetadataProvider metadataProvider, CustomObjectTagsProvider tagsProvider) {
         return this.transferManager.uploadFileList(bucketName, prefix, directory, files, metadataProvider, tagsProvider);
+    }
+
+    /**
+     * <p>
+     * 通过 TransferManager 下载 File
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param key        对象的键
+     * @param file       要下载到哪个文件
+     * @return download 对象
+     */
+    public Download downloadFile(String bucketName, String key, File file) {
+        Download download = null;
+        try {
+            System.out.println("Downloading to file: " + file.getAbsolutePath());
+            download = this.transferManager.download(bucketName, key, file);
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+        }
+        return download;
     }
 
 }
