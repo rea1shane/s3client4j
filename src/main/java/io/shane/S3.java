@@ -3,7 +3,6 @@ package io.shane;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
@@ -675,7 +674,7 @@ public class S3 {
      * </p>
      *
      * @param bucketName 桶的名称
-     * @return 版本控制状态，关闭返回 Off，开启返回 Enabled {@link BucketVersioningConfiguration}
+     * @return 版本控制状态，关闭返回 Off，开启返回 Enabled，暂停返回 Suspended {@link BucketVersioningConfiguration}
      */
     public String getBucketVersioningStatus(String bucketName) {
         BucketVersioningConfiguration conf = this.s3.getBucketVersioningConfiguration(bucketName);
