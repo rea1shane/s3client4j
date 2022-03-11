@@ -159,6 +159,21 @@ public class S3Test {
 
     /**
      * <p>
+     * {@link S3#getObject(String, String, String)}
+     * </p>
+     * <p>
+     * {@link S3#downloadObject(S3Object, OutputStream)}
+     * </p>
+     */
+    @Test
+    public void testDownloadObjectWithVersion() throws FileNotFoundException {
+        FileOutputStream outputStream = new FileOutputStream(sourceKey);
+        S3Object s3Object = s3Instance.getObject(sourceBucketName, sourceKey, "YzFa8VNpRJS.r76mAO8Hjf.df0JKUvEA");
+        System.out.println(s3Instance.downloadObject(s3Object, outputStream));
+    }
+
+    /**
+     * <p>
      * {@link S3#copyObject(String, String, String, String)}
      * </p>
      */
@@ -179,12 +194,36 @@ public class S3Test {
 
     /**
      * <p>
+     * {@link S3#deleteObject(String, String, String)}
+     * </p>
+     */
+    @Test
+    public void testDeleteObjectWithVersion() {
+        System.out.println(s3Instance.deleteObject(sourceBucketName, sourceKey, "YzFa8VNpRJS.r76mAO8Hjf.df0JKUvEA"));
+    }
+
+    /**
+     * <p>
      * {@link S3#deleteObjects(String, String[])}
      * </p>
      */
     @Test
     public void testDeleteObjectsWithKeys() {
         System.out.println(s3Instance.deleteObjects(sourceBucketName, keys));
+    }
+
+    /**
+     * <p>
+     * {@link S3#deleteObjects(String, Map)}
+     * </p>
+     */
+    @Test
+    public void testDeleteObjectsWithKeysAndVersion() {
+        Map<String, String> keyWithVersionIds = new HashMap<>();
+        keyWithVersionIds.put("dir_test/.DS_Store", "ldAf_sOvH4eiMLpPc7vhacegIyst_kIX");
+        keyWithVersionIds.put("dir_test/channel/.DS_Store", "VRoqMBWUyD.Ux5nZ2bScA1588UGopbVO");
+        keyWithVersionIds.put("dir_test/PROMETHEUS/.DS_Store", null);
+        System.out.println(s3Instance.deleteObjects(sourceBucketName, keyWithVersionIds));
     }
 
     /**
@@ -215,9 +254,11 @@ public class S3Test {
         Tag tag1 = new Tag("from", "mac");
         Tag tag2 = new Tag("auth", "shane");
         Tag tag3 = new Tag("method", "transfer_manager_with_stream");
+        Tag tag4 = new Tag("version", "new_version");
         tags.add(tag1);
         tags.add(tag2);
         tags.add(tag3);
+        tags.add(tag4);
         ObjectTagging objectTagging = new ObjectTagging(tags);
 
         Upload upload = s3Instance.uploadFile(sourceBucketName, picKey, input, objectMetadata, objectTagging);

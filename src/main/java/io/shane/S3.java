@@ -288,7 +288,6 @@ public class S3 {
      * @param versionId  对象的版本 ID
      * @return S3 对象
      */
-    // TODO 待测试
     public S3Object getObject(String bucketName, String key, String versionId) {
         return getObject(new GetObjectRequest(bucketName, key, versionId));
     }
@@ -409,7 +408,6 @@ public class S3 {
      * @param versionId  版本 ID
      * @return 操作结果
      */
-    // TODO 待测试
     public String deleteObject(String bucketName, String key, String versionId) {
         List<DeleteObjectsRequest.KeyVersion> keyVersions = convert2KeyVersion(key, versionId);
         return deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyVersions));
@@ -438,7 +436,6 @@ public class S3 {
      * @param keyWithVersionIds 对象的键与版本 ID 组成的字典
      * @return 操作结果
      */
-    // TODO 待测试
     public String deleteObjects(String bucketName, Map<String, String> keyWithVersionIds) {
         List<DeleteObjectsRequest.KeyVersion> keyVersions = convert2KeyVersion(keyWithVersionIds);
         return deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyVersions));
