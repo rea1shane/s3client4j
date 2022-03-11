@@ -3,7 +3,9 @@ package io.shane;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -17,6 +19,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
+import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
@@ -664,6 +667,46 @@ public class S3 {
             System.err.println(e.getErrorMessage());
         }
         return copy;
+    }
+
+    /**
+     * <p>
+     * 获取指定桶的版本控制配置状态
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @return 版本控制状态
+     */
+    public String getBucketVersioningConfiguration(String bucketName) {
+        BucketVersioningConfiguration conf = this.s3.getBucketVersioningConfiguration(bucketName);
+        return conf.getStatus();
+    }
+
+    /**
+     * <p>
+     * 更新指定桶的版本控制配置状态
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param enable     是否开启版本控制
+     * @return 操作结果
+     */
+    public String updateBucketVersioningConfiguration(String bucketName, boolean enable) {
+        String msg = "OK";
+        // TODO 变更前进行检测
+        try {
+            BucketVersioningConfiguration configuration = new BucketVersioningConfiguration();
+            if (enable) {
+                configuration = configuration.withStatus("Enabled");
+            }
+            SetBucketVersioningConfigurationRequest setBucketVersioningConfigurationRequest = new SetBucketVersioningConfigurationRequest(bucketName, configuration);
+            this.s3.setBucketVersioningConfiguration(setBucketVersioningConfigurationRequest);
+        } catch (AmazonS3Exception amazonS3Exception) {
+            System.out.format("An Amazon S3 error occurred. Exception: %s", amazonS3Exception.toString());
+        } catch (Exception ex) {
+            System.out.format("Exception: %s", ex.toString());
+        }
+        return msg;
     }
 
 }

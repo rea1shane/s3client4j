@@ -1,6 +1,7 @@
 package io.shane;
 
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.ObjectTagging;
@@ -309,6 +310,26 @@ public class S3Test {
     public void testCopy() {
         Copy copy = s3Instance.copy(sourceBucketName, sourceKey, destinationBucketName, destinationKey);
         TransferManagerProgress.showTransferProgress(copy);
+    }
+
+    /**
+     * <p>
+     * {@link S3#getBucketVersioningConfiguration(String)}
+     * </p>
+     */
+    @Test
+    public void testGetBucketVersioningConfiguration() {
+        System.out.println(s3Instance.getBucketVersioningConfiguration(sourceBucketName));
+    }
+
+    /**
+     * <p>
+     * {@link S3#updateBucketVersioningConfiguration(String, boolean)}
+     * </p>
+     */
+    @Test
+    public void testUpdateBucketVersioningConfiguration() {
+
     }
 
     /**
