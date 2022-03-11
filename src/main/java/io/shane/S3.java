@@ -671,40 +671,59 @@ public class S3 {
 
     /**
      * <p>
-     * 获取指定桶的版本控制配置状态
+     * 获取指定桶的版本控制开关状态
      * </p>
      *
      * @param bucketName 桶的名称
-     * @return 版本控制状态
+     * @return 版本控制状态，关闭返回 Off，开启返回 Enabled {@link BucketVersioningConfiguration}
      */
-    public String getBucketVersioningConfiguration(String bucketName) {
+    public String getBucketVersioningStatus(String bucketName) {
         BucketVersioningConfiguration conf = this.s3.getBucketVersioningConfiguration(bucketName);
         return conf.getStatus();
     }
 
     /**
      * <p>
-     * 更新指定桶的版本控制配置状态
+     * 开启或暂停指定桶的版本控制
+     * </p>
+     * <p>
+     * 版本控制有三种状态，禁用 / 开启 / 暂停，创建一个 s3 桶的时候默认是禁用状态，可以通过配置开启版本控制，开启后就不能禁用版本控制了，只能暂停版本控制，此操作会暂停创建所有操作的对象版本，但会保留任何现有的对象版本。
      * </p>
      *
      * @param bucketName 桶的名称
      * @param enable     是否开启版本控制
      * @return 操作结果
      */
-    public String updateBucketVersioningConfiguration(String bucketName, boolean enable) {
+    public String switchBucketVersioningStatus(String bucketName, boolean enable) {
         String msg = "OK";
-        // TODO 变更前进行检测
-        try {
-            BucketVersioningConfiguration configuration = new BucketVersioningConfiguration();
-            if (enable) {
-                configuration = configuration.withStatus("Enabled");
+        String status = getBucketVersioningStatus(bucketName);
+        boolean statusBool;
+        switch (status) {
+            case "Off":
+            case "Suspended":
+                statusBool = false;
+                break;
+            case "Enabled":
+                statusBool = true;
+                break;
+            default:
+                msg = "Unknown versioning status: " + status;
+                return msg;
+        }
+        if (enable == statusBool) {
+            String statusString = enable ? "enable" : "off or suspended";
+            msg = "Already " + statusString + ", no change.";
+        } else {
+            try {
+                BucketVersioningConfiguration configuration = new BucketVersioningConfiguration();
+                configuration = enable ? configuration.withStatus("Enabled") : configuration.withStatus("Suspended");
+                SetBucketVersioningConfigurationRequest setBucketVersioningConfigurationRequest = new SetBucketVersioningConfigurationRequest(bucketName, configuration);
+                this.s3.setBucketVersioningConfiguration(setBucketVersioningConfigurationRequest);
+            } catch (AmazonServiceException e) {
+                msg = e.getErrorMessage();
+                System.err.println(msg);
+                System.err.println("Failure!");
             }
-            SetBucketVersioningConfigurationRequest setBucketVersioningConfigurationRequest = new SetBucketVersioningConfigurationRequest(bucketName, configuration);
-            this.s3.setBucketVersioningConfiguration(setBucketVersioningConfigurationRequest);
-        } catch (AmazonS3Exception amazonS3Exception) {
-            System.out.format("An Amazon S3 error occurred. Exception: %s", amazonS3Exception.toString());
-        } catch (Exception ex) {
-            System.out.format("Exception: %s", ex.toString());
         }
         return msg;
     }

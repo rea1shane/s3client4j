@@ -1,7 +1,6 @@
 package io.shane;
 
 import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.ObjectTagging;
@@ -9,7 +8,6 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.Tag;
 import com.amazonaws.services.s3.transfer.Copy;
-import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.Upload;
 import io.shane.provider.CustomObjectMetadataProvider;
@@ -314,22 +312,22 @@ public class S3Test {
 
     /**
      * <p>
-     * {@link S3#getBucketVersioningConfiguration(String)}
+     * {@link S3#getBucketVersioningStatus(String)}
      * </p>
      */
     @Test
-    public void testGetBucketVersioningConfiguration() {
-        System.out.println(s3Instance.getBucketVersioningConfiguration(sourceBucketName));
+    public void testGetBucketVersioningStatus() {
+        System.out.println(s3Instance.getBucketVersioningStatus(sourceBucketName));
     }
 
     /**
      * <p>
-     * {@link S3#updateBucketVersioningConfiguration(String, boolean)}
+     * {@link S3#switchBucketVersioningStatus(String, boolean)}
      * </p>
      */
     @Test
-    public void testUpdateBucketVersioningConfiguration() {
-
+    public void testSwitchBucketVersioningStatus() {
+        System.out.println(s3Instance.switchBucketVersioningStatus(sourceBucketName, true));
     }
 
     /**
