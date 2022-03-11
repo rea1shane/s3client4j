@@ -531,12 +531,40 @@ public class S3 {
      * @param bucketName  桶的名称
      * @param key         对象的键
      * @param inputStream 文件流
+     * @return upload 对象
+     */
+    public Upload uploadFile(String bucketName, String key, InputStream inputStream) {
+        return uploadFile(bucketName, key, inputStream, null, null);
+    }
+
+    /**
+     * <p>
+     * 使用 InputStream，通过 TransferManager 上传文件
+     * </p>
+     *
+     * @param bucketName  桶的名称
+     * @param key         对象的键
+     * @param inputStream 文件流
      * @param metadata    元数据
      * @param tags        标签
      * @return upload 对象
      */
     public Upload uploadFile(String bucketName, String key, InputStream inputStream, ObjectMetadata metadata, ObjectTagging tags) {
         return upload(new PutObjectRequest(bucketName, key, inputStream, metadata).withTagging(tags));
+    }
+
+    /**
+     * <p>
+     * 使用 File，通过 TransferManager 上传文件
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param key        对象的键
+     * @param file       文件
+     * @return upload 对象
+     */
+    public Upload uploadFile(String bucketName, String key, File file) {
+        return uploadFile(bucketName, key, file, null, null);
     }
 
     /**
@@ -578,10 +606,25 @@ public class S3 {
      * 使用 List<File>，通过 TransferManager 上传多个文件
      * </p>
      *
+     * @param bucketName 桶的名称
+     * @param prefix     上传路径
+     * @param directory  本地文件的路径文件的路径
+     * @param files      待上传的文件列表
+     * @return multipleFileUpload 对象
+     */
+    public MultipleFileUpload uploadFileList(String bucketName, String prefix, File directory, List<File> files) {
+        return uploadFileList(bucketName, prefix, directory, files, null, null);
+    }
+
+    /**
+     * <p>
+     * 使用 List<File>，通过 TransferManager 上传多个文件
+     * </p>
+     *
      * @param bucketName       桶的名称
      * @param prefix           上传路径
-     * @param directory        文件的路径文件的路径
-     * @param files            文件列表
+     * @param directory        本地文件的路径文件的路径
+     * @param files            待上传的文件列表
      * @param metadataProvider 用于赋予不同文件元数据
      * @param tagsProvider     用于赋予不同文件标签
      * @return multipleFileUpload 对象
