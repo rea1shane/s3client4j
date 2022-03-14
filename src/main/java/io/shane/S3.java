@@ -230,6 +230,31 @@ public class S3 {
 
     /**
      * <p>
+     * 列出启用版本控制的存储桶中的对象
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param prefix     检索前缀或者过滤字符串
+     * @return 一个 VersionListing 对象
+     */
+    public VersionListing listVersions(String bucketName, String prefix) {
+        return listVersions(new ListVersionsRequest(bucketName, prefix, null, null, null, null));
+    }
+
+    /**
+     * <p>
+     * 列出启用版本控制的存储桶中的对象
+     * </p>
+     *
+     * @param listVersionsRequest 请求对象，包含列出指定桶中的对象的所有选项
+     * @return 一个 VersionListing 对象
+     */
+    private VersionListing listVersions(ListVersionsRequest listVersionsRequest) {
+        return this.s3.listVersions(listVersionsRequest);
+    }
+
+    /**
+     * <p>
      * 上传文件
      * </p>
      *

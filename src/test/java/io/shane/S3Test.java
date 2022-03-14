@@ -6,7 +6,9 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.Tag;
+import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -119,10 +121,24 @@ public class S3Test {
      */
     @Test
     public void testListObjectsWithPrefix() {
-        ObjectListing objectListing = s3Instance.listObjects(sourceBucketName, prefix);
+        ObjectListing objectListing = s3Instance.listObjects(sourceBucketName, "dir_test/PROMETHEUS/configuration/azkabanexporter-env.xml");
         System.out.format("Objects in S3 bucket [%s] with prefix [%s] are:\n", sourceBucketName, prefix);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             System.out.println("* " + summary.getKey());
+        }
+    }
+
+    /**
+     * <p>
+     * {@link S3#listVersions(String, String)}
+     * </p>
+     */
+    @Test
+    public void testListVersions() {
+        VersionListing versionListing = s3Instance.listVersions(sourceBucketName, "dir_test/PROMETHEUS/configuration/azkabanexporter-env.xml");
+        for (S3VersionSummary versionSummary : versionListing.getVersionSummaries()) {
+            System.out.println(versionSummary.isDeleteMarker());
+            System.out.println(versionSummary.getKey() + " : " + versionSummary.getVersionId());
         }
     }
 
