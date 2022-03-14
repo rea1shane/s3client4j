@@ -148,36 +148,25 @@ public class S3 {
         String msg = "OK";
         try {
             System.out.printf("Deleting S3 bucket [%s]:\n", bucketName);
+
             System.out.println(" - removing objects from bucket...");
             ObjectListing objectListing = listObjects(bucketName);
-            while (true) {
+            do {
                 for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
                     deleteObject(bucketName, summary.getKey());
                 }
-
-                // more objectListing to retrieve?
-                if (objectListing.isTruncated()) {
-                    objectListing = this.s3.listNextBatchOfObjects(objectListing);
-                } else {
-                    break;
-                }
-            }
+                objectListing = listNextBatchOfObjects(objectListing);
+            } while (objectListing != null);
             System.out.println(" - done!");
 
             System.out.println(" - removing versions from bucket...");
-            VersionListing versionListing = this.s3.listVersions(new ListVersionsRequest().withBucketName(bucketName));
-            while (true) {
+            VersionListing versionListing = listVersions(new ListVersionsRequest().withBucketName(bucketName));
+            do {
                 for (S3VersionSummary vs : versionListing.getVersionSummaries()) {
                     this.s3.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
                 }
-
-                // more versionListing to retrieve?
-                if (versionListing.isTruncated()) {
-                    versionListing = this.s3.listNextBatchOfVersions(versionListing);
-                } else {
-                    break;
-                }
-            }
+                versionListing = listNextBatchOfVersions(versionListing);
+            } while (versionListing != null);
             System.out.println(" - done!");
 
             System.out.println(" - deleting bucket...");
@@ -195,6 +184,9 @@ public class S3 {
      * <p>
      * 获取指定桶中的对象信息，只能获取到对象的摘要信息
      * </p>
+     * <p>
+     * 注意：此方法会对结果进行分页，要获取所有结果请调用 {@link S3#listNextBatchOfObjects(ObjectListing)}
+     * </p>
      *
      * @param bucketName 桶的名称
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
@@ -206,6 +198,9 @@ public class S3 {
     /**
      * <p>
      * 获取指定桶、指定前缀中的对象信息，只能获取到对象的摘要信息
+     * </p>
+     * <p>
+     * 注意：此方法会对结果进行分页，要获取所有结果请调用 {@link S3#listNextBatchOfObjects(ObjectListing)}
      * </p>
      *
      * @param bucketName 桶的名称
@@ -220,6 +215,9 @@ public class S3 {
      * <p>
      * 获取桶中的对象信息，通过配置请求参数来筛选对象，只能获取到对象的摘要信息
      * </p>
+     * <p>
+     * 注意：此方法会对结果进行分页，要获取所有结果请调用 {@link S3#listNextBatchOfObjects(ObjectListing)}
+     * </p>
      *
      * @param listObjectsRequest 请求对象，包含列出指定桶中的对象的所有选项
      * @return 一个 ObjectListing 对象，该对象提供有关存储桶中对象的信息
@@ -230,7 +228,26 @@ public class S3 {
 
     /**
      * <p>
+     * 列出 objectListing 的下一个分页，如果已经是最后一个分页则返回 null
+     * </p>
+     *
+     * @param objectListing 要获取下一个分页的 ObjectListing 对象
+     * @return objectListing 的下一个分页
+     */
+    public ObjectListing listNextBatchOfObjects(ObjectListing objectListing) {
+        ObjectListing nextBatch = null;
+        if (objectListing.isTruncated()) {
+            nextBatch = this.s3.listNextBatchOfObjects(objectListing);
+        }
+        return nextBatch;
+    }
+
+    /**
+     * <p>
      * 列出启用版本控制的存储桶中的对象
+     * </p>
+     * <p>
+     * 注意：此方法会对结果进行分页，要获取所有结果请调用 {@link S3#listNextBatchOfVersions(VersionListing)}
      * </p>
      *
      * @param bucketName 桶的名称
@@ -245,6 +262,9 @@ public class S3 {
      * <p>
      * 列出启用版本控制的存储桶中的对象
      * </p>
+     * <p>
+     * 注意：此方法会对结果进行分页，要获取所有结果请调用 {@link S3#listNextBatchOfVersions(VersionListing)}
+     * </p>
      *
      * @param listVersionsRequest 请求对象，包含列出指定桶中的对象的所有选项
      * @return 一个 VersionListing 对象
@@ -255,18 +275,18 @@ public class S3 {
 
     /**
      * <p>
-     * 列出 listVersionsRequest 的下一个分页
+     * 列出 versionListing 的下一个分页，如果已经是最后一个分页则返回 null
      * </p>
      *
      * @param versionListing 要获取下一个分页的 VersionListing 对象
-     * @return 参数 VersionListing 对象的下一个分页
+     * @return versionListing 的下一个分页
      */
     public VersionListing listNextBatchOfVersions(VersionListing versionListing) {
-        VersionListing result = null;
+        VersionListing nextBatch = null;
         if (versionListing.isTruncated()) {
-            result = this.s3.listNextBatchOfVersions(versionListing);
+            nextBatch = this.s3.listNextBatchOfVersions(versionListing);
         }
-        return result;
+        return nextBatch;
     }
 
     /**
