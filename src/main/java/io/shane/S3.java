@@ -255,6 +255,22 @@ public class S3 {
 
     /**
      * <p>
+     * 列出 listVersionsRequest 的下一个分页
+     * </p>
+     *
+     * @param versionListing 要获取下一个分页的 VersionListing 对象
+     * @return 参数 VersionListing 对象的下一个分页
+     */
+    public VersionListing listNextBatchOfVersions(VersionListing versionListing) {
+        VersionListing result = null;
+        if (versionListing.isTruncated()) {
+            result = this.s3.listNextBatchOfVersions(versionListing);
+        }
+        return result;
+    }
+
+    /**
+     * <p>
      * 上传文件
      * </p>
      *

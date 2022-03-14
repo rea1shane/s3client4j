@@ -132,6 +132,9 @@ public class S3Test {
      * <p>
      * {@link S3#listVersions(String, String)}
      * </p>
+     * <p>
+     * {@link S3#listNextBatchOfVersions(VersionListing)}
+     * </p>
      */
     @Test
     public void testListVersions() {
@@ -140,6 +143,7 @@ public class S3Test {
             System.out.println(versionSummary.isDeleteMarker());
             System.out.println(versionSummary.getKey() + " : " + versionSummary.getVersionId());
         }
+        System.out.println(s3Instance.listNextBatchOfVersions(versionListing));
     }
 
     /**
