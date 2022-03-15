@@ -138,9 +138,10 @@ public class S3Test {
      */
     @Test
     public void testListVersions() {
-        VersionListing versionListing = s3Instance.listVersions(sourceBucketName, "dir_test/PROMETHEUS/configuration/azkabanexporter-env.xml");
+        VersionListing versionListing = s3Instance.listVersions(sourceBucketName, null);
         for (S3VersionSummary versionSummary : versionListing.getVersionSummaries()) {
-            System.out.println(versionSummary.isDeleteMarker());
+            // TODO 可以用这个回滚到某一个版本
+            System.out.println(versionSummary.isDeleteMarker() + " " + versionSummary.getLastModified().toString());
             System.out.println(versionSummary.getKey() + " : " + versionSummary.getVersionId());
         }
         System.out.println(s3Instance.listNextBatchOfVersions(versionListing));
