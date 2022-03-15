@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteVersionRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
@@ -163,7 +164,7 @@ public class S3 {
             VersionListing versionListing = listVersions(new ListVersionsRequest().withBucketName(bucketName));
             do {
                 for (S3VersionSummary vs : versionListing.getVersionSummaries()) {
-                    this.s3.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
+                    deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
                 }
                 versionListing = listNextBatchOfVersions(versionListing);
             } while (versionListing != null);
@@ -287,6 +288,48 @@ public class S3 {
             nextBatch = this.s3.listNextBatchOfVersions(versionListing);
         }
         return nextBatch;
+    }
+
+    /**
+     * <p>
+     * 删除桶中对象的版本
+     * </p>
+     * <p>
+     * 与 {@link S3#deleteObjects(DeleteObjectsRequest)} 不同的是，此操作会删除干净对象的版本信息，{@link S3#deleteObjects(DeleteObjectsRequest)} 只是标记删除了对象或者对象版本
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @param key        对象的键
+     * @param versionId  对象的版本 ID
+     * @return 操作结果
+     */
+    public String deleteVersion(String bucketName, String key, String versionId) {
+        return deleteVersion(new DeleteVersionRequest(bucketName, key, versionId));
+    }
+
+    /**
+     * <p>
+     * 删除桶中对象的版本
+     * </p>
+     * <p>
+     * 与 {@link S3#deleteObjects(DeleteObjectsRequest)} 不同的是，此操作会删除干净对象的版本信息，{@link S3#deleteObjects(DeleteObjectsRequest)} 只是标记删除了对象或者对象版本
+     * </p>
+     *
+     * @param deleteVersionRequest 请求对象，包含删除对象版本的所有选项
+     * @return 操作结果
+     */
+    public String deleteVersion(DeleteVersionRequest deleteVersionRequest) {
+        String msg = "OK";
+        try {
+            System.out.println("Deleting version...");
+            this.s3.deleteVersion(deleteVersionRequest);
+            System.out.println("Done!");
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
+            System.err.println(msg);
+            System.err.println("Failure!");
+        }
+        return msg;
     }
 
     /**

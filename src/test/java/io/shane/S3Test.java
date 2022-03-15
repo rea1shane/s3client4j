@@ -149,6 +149,16 @@ public class S3Test {
 
     /**
      * <p>
+     * {@link S3#deleteVersion(String, String, String)}
+     * </p>
+     */
+    @Test
+    public void testDeleteVersion() {
+        s3Instance.deleteVersion(sourceBucketName, "sample_07.csv", "i04N0U0J1J0U7ezRRII7Bz3fglWuWBak");
+    }
+
+    /**
+     * <p>
      * {@link S3#putObject(String, String, InputStream, ObjectMetadata)}
      * </p>
      */
