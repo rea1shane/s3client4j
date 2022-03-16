@@ -3,7 +3,9 @@ package io.shane;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AbortIncompleteMultipartUpload;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.BucketLifecycleConfiguration;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
@@ -19,6 +21,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
+import com.amazonaws.services.s3.model.SetBucketLifecycleConfigurationRequest;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.Copy;
@@ -796,6 +799,7 @@ public class S3 {
      */
     public String switchBucketVersioningStatus(String bucketName, boolean enable) {
         String msg = "OK";
+        System.out.println("Switching bucket versioning status...");
         String status = getBucketVersioningStatus(bucketName);
         boolean statusBool;
         switch (status) {
@@ -813,17 +817,92 @@ public class S3 {
         if (enable == statusBool) {
             String statusString = enable ? "enable" : "off or suspended";
             msg = "Already " + statusString + ", no change.";
+            System.out.println(msg);
         } else {
             try {
                 BucketVersioningConfiguration configuration = new BucketVersioningConfiguration();
                 configuration = enable ? configuration.withStatus("Enabled") : configuration.withStatus("Suspended");
                 SetBucketVersioningConfigurationRequest setBucketVersioningConfigurationRequest = new SetBucketVersioningConfigurationRequest(bucketName, configuration);
                 this.s3.setBucketVersioningConfiguration(setBucketVersioningConfigurationRequest);
+                System.out.println("Done!");
             } catch (AmazonServiceException e) {
                 msg = e.getErrorMessage();
                 System.err.println(msg);
                 System.err.println("Failure!");
             }
+        }
+        return msg;
+    }
+
+    /**
+     * <p>
+     * 获取桶的生命周期配置
+     * </p>
+     *
+     * @param bucketName 桶的名称
+     * @return 桶的生命周期配置文件
+     */
+    public BucketLifecycleConfiguration getBucketLifecycleConfiguration(String bucketName) {
+        return this.s3.getBucketLifecycleConfiguration(bucketName);
+    }
+
+    /**
+     * <p>
+     * 该规则指示 Amazon S3 中止在启动后没有在指定天数内完成的分段上传。当超过设置的时间限制时，Amazon S3 将中止上传，然后删除未完成的上传数据。
+     * </p>
+     *
+     * @param bucketName          桶的名称
+     * @param daysAfterInitiation 指示生命周期从开始到中止不完整的多部分上传必须经过的天数
+     * @return 操作结果
+     */
+    public String setBucketLifecycleAbortIncompleteMultipartUpload(String bucketName, int daysAfterInitiation) {
+        AbortIncompleteMultipartUpload abortIncompleteMultipartUpload = new AbortIncompleteMultipartUpload();
+        abortIncompleteMultipartUpload.setDaysAfterInitiation(daysAfterInitiation);
+
+        BucketLifecycleConfiguration.Rule rule = new BucketLifecycleConfiguration.Rule()
+                .withId("Abort incomplete multipart upload rule")
+                .withStatus(BucketLifecycleConfiguration.ENABLED);
+        rule.setAbortIncompleteMultipartUpload(abortIncompleteMultipartUpload);
+
+        BucketLifecycleConfiguration bucketLifecycleConfiguration = getBucketLifecycleConfiguration(bucketName);
+        if (bucketLifecycleConfiguration == null) {
+            bucketLifecycleConfiguration = new BucketLifecycleConfiguration();
+        }
+        bucketLifecycleConfiguration.withRules(rule);
+        return setBucketLifecycleConfiguration(bucketName, bucketLifecycleConfiguration);
+    }
+
+    /**
+     * <p>
+     * 配置桶的生命周期规则
+     * </p>
+     *
+     * @param bucketName                   桶的名称
+     * @param bucketLifecycleConfiguration 桶的生命周期配置文件
+     * @return 操作结果
+     */
+    public String setBucketLifecycleConfiguration(String bucketName, BucketLifecycleConfiguration bucketLifecycleConfiguration) {
+        return setBucketLifecycleConfiguration(new SetBucketLifecycleConfigurationRequest(bucketName, bucketLifecycleConfiguration));
+    }
+
+    /**
+     * <p>
+     * 配置桶的生命周期规则
+     * </p>
+     *
+     * @param setBucketLifecycleConfigurationRequest 请求对象，包含设置生命周期规则的所有选项
+     * @return 操作结果
+     */
+    private String setBucketLifecycleConfiguration(SetBucketLifecycleConfigurationRequest setBucketLifecycleConfigurationRequest) {
+        String msg = "OK";
+        try {
+            System.out.println("Setting bucket lifecycle configuration...");
+            this.s3.setBucketLifecycleConfiguration(setBucketLifecycleConfigurationRequest);
+            System.out.println("Done!");
+        } catch (AmazonServiceException e) {
+            msg = e.getErrorMessage();
+            System.err.println(msg);
+            System.err.println("Failure!");
         }
         return msg;
     }

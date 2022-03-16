@@ -1,6 +1,7 @@
 package io.shane;
 
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.BucketLifecycleConfiguration;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.ObjectTagging;
@@ -398,8 +399,21 @@ public class S3Test {
      * </p>
      */
     @Test
-    public void testSwitchBucketVersioningStatus() {
-        System.out.println(s3Instance.switchBucketVersioningStatus(sourceBucketName, true));
+    public void testGetBucketLifecycleConfiguration() {
+        BucketLifecycleConfiguration bucketLifecycleConfiguration = s3Instance.getBucketLifecycleConfiguration(sourceBucketName);
+        for (BucketLifecycleConfiguration.Rule rule : bucketLifecycleConfiguration.getRules()) {
+            System.out.println(rule.getId());
+        }
+    }
+
+    /**
+     * <p>
+     * {@link S3#setBucketLifecycleAbortIncompleteMultipartUpload(String, int)}
+     * </p>
+     */
+    @Test
+    public void testSetBucketLifecycleAbortIncompleteMultipartUpload() {
+        System.out.println(s3Instance.setBucketLifecycleAbortIncompleteMultipartUpload(sourceBucketName, 7));
     }
 
     /**
